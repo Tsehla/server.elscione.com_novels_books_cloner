@@ -2,6 +2,7 @@ const express = require('express');
 const axios = require('axios');
 const { JSDOM } = require('jsdom');
 const fs = require('fs');
+const path = require('node:path');
 
 const app = express();
 const PORT = 3000;
@@ -45,6 +46,7 @@ app.get('/getLinks', async (req, res) => {
 
 
 const puppeteer = require('puppeteer');
+const { Console } = require('console');
 
 //LINKS PROBLEM, SOME SUBLINKS FROM MAIN LINKS CHILD LINKS ARE NOT LOOPED OR CONTAINED LINKS RETURNED.
 //OPTION TWO, GET ONLY LINKS WHITHIN A DIV FROM BROWSER RATHER THAN ALL LINKS IN A WEBPAGE, THIS WILL MAKE CODE SIMPLER
@@ -540,27 +542,43 @@ async function pupeteer(url, res){
       
         // If the directory does not exist, create it.
         if (!exists) {
-          await fs.mkdirSync(directoryName);
+          await fs.mkdirSync(directoryName,  {recursive: true});
         }
 
       };
       
-      await createDirectory('/downloads/books/');
-      
-      await createDirectory('/downloads/links/');
+      await createDirectory('./downloads/books/'+complete_link[0].href.split('/')[2] );
+
+      await createDirectory('./downloads/links/'+complete_link[0].href.split('/')[2] );
 
 
 
       //save file
-      await fs.writeFile('/downloads/links/'+complete_link[0].href.split('/')[2] +'/'+ date + '.json', JSON.stringify(complete_link,1,1),  err => {
+
+    var file_name = complete_link[0].href.split('/')[2] +'/'+ date + '.json';
+
+      await fs.writeFile(path.resolve(__dirname,'./downloads/links/'+file_name.replaceAll(/[^A-Za-z0-9.\-_]/gi,'-')), JSON.stringify(complete_link,1,1),  err => {//clean file name of special characters
         if (err) {
 
-          console.error('file save errors : /downloads/links/'+complete_link[0].href.split('/')[2] +'/'+ date + '.json ', err);
+          console.error('file save errors :' + path.resolve(__dirname,'./downloads/links/'+ file_name.replaceAll(/[^A-Za-z0-9.\-_]/gi,'-')), err);
         }
         // file written successfully
       });
 
       //check if folder structore with file to download axist on disk//if so remove link from links array
+      complete_link.forEach(file=>{
+
+
+
+        console.log(file)
+
+        //
+
+        var file_to_folder = file[0].href.replace(file[0].href.split('/')[2], '').replace('http','').replace('https','').replace('://','').replace(/[/]/gi,'\\');
+        console.log(file_to_folder);
+
+
+      })
 
 
 
