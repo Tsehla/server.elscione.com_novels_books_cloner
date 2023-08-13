@@ -557,8 +557,7 @@ async function pupeteer(url, res){
 
 
 
-      //save file
-
+      //save file //retrived links as json object file
       var file_name = complete_link[0].href.split('/')[2] +'/'+ date + '.json';
 
       await fs.writeFile(path.resolve(__dirname,'./downloads/links/'+file_name.replaceAll(/[^A-Za-z0-9.\-_]/gi,'-')), JSON.stringify(complete_link,1,1),  err => {//clean file name of special characters
@@ -569,12 +568,18 @@ async function pupeteer(url, res){
         // file written successfully
       });
 
-      //check if folder structore with file to download axist on disk//if so remove link from links array
+
+
+      //check if folder structore with file/book to download axist on disk//if so remove link from links array
       complete_link.forEach((file, index)=>{
 
 
         //decode url to text string, remove server domain and related, clean string of file unfriendly characters
-        var file_to_folder = decodeURIComponent(file.href.replace(file.href.split('/')[2], '').replace('https','').replace('http','').replace('://','').replace(/[/]/gi,'\\')).replaceAll(/[^A-Za-z0-9.\-_/\s\\]/gi,'-');
+        
+        var file_directory_ =  file.href.replace( file.href.split('/')[file.href.split('/').length - 1], '');//remove file name
+
+        //turn to folder address format
+        var file_to_folder = decodeURIComponent(file_directory_.replace(file_directory_.split('/')[2], '').replace('https','').replace('http','').replace('://','').replace(/[/]/gi,'\\')).replaceAll(/[^A-Za-z0-9.\-_/\s\\]/gi,'-');
 
         // console.log(file.href.split('/')[2], '', file_to_folder);
 
@@ -592,7 +597,8 @@ async function pupeteer(url, res){
             //remove file from to download links
             console.log('--splice 1-- ', complete_link.length);
             complete_link.splice(index,1);//delete link\
-            console.error('file already available locally : '+file_to_folder)
+            // console.log( 'splice ', complete_link.splice(index,1))
+            console.error('file already available locally : '+path.resolve(__dirname,'./downloads/books/'+ file_to_folder +   decodeURIComponent(file.href.split('/')[file.href.split('/').length - 1] ) ))
             console.log('--splice 2-- ', complete_link.length);
           }
 
@@ -600,7 +606,7 @@ async function pupeteer(url, res){
           else{
 
             //if file not exist
-            console.error('error file dont exist locally do download: '+file_to_folder)
+            console.error('error file dont exist locally do download: '+path.resolve(__dirname,'./downloads/books/'+ file_to_folder +   decodeURIComponent(file.href.split('/')[file.href.split('/').length - 1] ) ))
           }
         } 
         catch(err) {
@@ -615,27 +621,29 @@ async function pupeteer(url, res){
       
       async function file_downloader (file_url) {
 
-        console.log('-=- ', file_url)
+
+        // console.log('-=- ', file_url)
+
         // //check download path exist or create if not
-        // const createDirectory = async (directoryName) => {
+        const createDirectory = async (directoryName) => {
 
-        //   // Check if the directory already exists.
-        //   const exists = await fs.existsSync(directoryName);
+          // Check if the directory already exists.
+          const exists = await fs.existsSync(directoryName);
         
-        //   // If the directory does not exist, create it.
-        //   if (!exists) {
-        //     await fs.mkdirSync(directoryName,  {recursive: true});
-        //   }
+          // If the directory does not exist, create it.
+          if (!exists) {
+            await fs.mkdirSync(directoryName,  {recursive: true});
+          }
 
-        // };
+        };
 
         //fuile url
         // var file_url = url + filename_url;//file complete url/direct link
 
-        var file_directory =  file_url.replace( file_url.split('/')[file_url.split('/').length - 1], '');//remove file name
+        var file_directory =  file_url.href.replace( file_url.href.split('/')[file_url.href.split('/').length - 1], '');//remove file name
 
         //file url to folder structure
-        var file_folder = decodeURIComponent(file_directory.replace(file_directory.split('/')[2], '').replace('https','').replace('http','').replace('://','').replace(/[/]/gi,'\\')).replaceAll(/[^A-Za-z0-9.\-_/\s\\]/gi,'-');
+        var file_folder = decodeURIComponent(file_directory.replace(file_directory.split('/')[2], '').replace('https','').replace('http','').replace('://','').replace(/[/]/gi,'\\')).replaceAll(/[^A-Za-z0-9.\-_/\s\\]/gi,'-'); 
         
         await createDirectory('./downloads/books/'+ file_folder );//call directory create
         
@@ -662,10 +670,10 @@ async function pupeteer(url, res){
 
 
         // Create a new Puppeteer browser instance.
-        // const browser = await puppeteer.launch({headless:false});
+        const browser = await puppeteer.launch({headless:false});
 
         // Create a new page in the browser.
-        // const page = await browser.newPage();
+        const page = await browser.newPage();
 
         // Navigate to the URL of the file to download.
         await page.goto(file_directory);
@@ -698,7 +706,7 @@ async function pupeteer(url, res){
         await page.evaluate((file_url) => {
 
           //clik anchor
-          [...document.querySelectorAll('a')].find(element => element.href === (file_url)).click();
+          [...document.querySelectorAll('a')].find(element => element.href === (file_url.href)).click();
 
 
         },file_url); //pass argument to evaluate
@@ -709,15 +717,15 @@ async function pupeteer(url, res){
           //check if file is complete download every 5 seconds for 1 hour
           var download_complete_tracker = 0;
 
-          var download_tracker_timer = setInterval(()=>{
+          var download_tracker_timer = setInterval( async ()=>{
             //check the file : 
             try {
 
 
               //check file downloaded
-              if (fs.existsSync(path.resolve(__dirname,'./downloads/books/'+ file_folder +   decodeURIComponent(file_url.split('/')[file_url.split('/').length - 1] ) ))) { 
+              if (fs.existsSync(path.resolve(__dirname,'./downloads/books/'+ file_folder +   decodeURIComponent(file_url.href.split('/')[file_url.href.split('/').length - 1] ) ))) { 
                 //file exists
-                console.log('file downloaded' + path.resolve(__dirname,'./downloads/books/'+ file_folder +  decodeURIComponent(file_url.split('/')[file_url.split('/').length - 1] )));
+                console.log('file downloaded' + path.resolve(__dirname,'./downloads/books/'+ file_folder +  decodeURIComponent(file_url.href.split('/')[file_url.href.split('/').length - 1] )));
                 // clear timer
                 clearInterval(download_tracker_timer);
 
@@ -727,13 +735,22 @@ async function pupeteer(url, res){
                 //remove link from array
                 complete_link.splice(0,1);//remove itend on first index
 
+                
+                await browser.close();//close browser//previus browser instances
+
+                  
+                //call controller
+                download_controller();
+
               }
 
               //check if not file downloaded
               else {
 
                 //check timer tracker
-                if(download_complete_tracker > 240){
+                // if(download_complete_tracker > 240){//20minuste
+                if(download_complete_tracker > 720){//1 hour
+
                   // clear timer
                   clearInterval(download_tracker_timer);
 
@@ -741,16 +758,23 @@ async function pupeteer(url, res){
                   download_complete_tracker = 0;
 
                   //give error
-                  console.log("Checking [download complete] suspended for file after 240 tries after 5 seconds interval : " + path.resolve(__dirname,'./downloads/books/'+ file_folder +  decodeURIComponent(file_url.split('/')[file_url.split('/').length - 1] )));
+                  console.log("Checking [download complete] suspended for file after 240 tries after 5 seconds interval : " + path.resolve(__dirname,'./downloads/books/'+ file_folder +  decodeURIComponent(file_url.href.split('/')[file_url.href.split('/').length - 1] )));
 
                   //remove link from array
                   complete_link.splice(0,1);//remove itend on first index
+
+                          
+                  await browser.close();//close browser//previus browser instances
+
+                    
+                  //call controller
+                  download_controller();
                 }
 
                 else {
 
                   //if file not exist
-                  console.error('waiting for download to complete for file in : '+path.resolve(__dirname,'./downloads/books/'+ file_folder + decodeURIComponent( file_url.split('/')[file_url.split('/').length - 1] )) +', try number [' +download_complete_tracker+'/240]');
+                  console.error('waiting for download to complete for file in : '+path.resolve(__dirname,'./downloads/books/'+ file_folder + decodeURIComponent( file_url.href.split('/')[file_url.href.split('/').length - 1] )) +', try number [' +download_complete_tracker+'/720]');
 
                   //increase
                   download_complete_tracker = download_complete_tracker + 1;
@@ -760,7 +784,7 @@ async function pupeteer(url, res){
               }
             } 
             catch (e){//catch error
-              console.log('download complete checking error for file '+file_url + ', error = '+e);
+              console.log('download complete checking error for file '+file_url.href + ', error = '+e);
 
 
               //remove link from download list
@@ -770,6 +794,10 @@ async function pupeteer(url, res){
               download_complete_tracker = 0;
 
 
+                     
+              await browser.close();//close browser//previus browser instances
+
+                  
               //call controller
               download_controller();
             }
@@ -796,7 +824,7 @@ async function pupeteer(url, res){
         else {
           console.log('----++++ PROCESS COMPLETE ++++------, capture stats');
           
-          await browser.close();//close browser
+          // await browser.close();//close browser
         }
 
       } download_controller(); //auto start
