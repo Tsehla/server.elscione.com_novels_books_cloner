@@ -158,7 +158,7 @@ var stats_data = {
     // }
 
 
-    main_folder_links = main_folder_links.splice(0,1); // ------------   FOR TESTING RETURN ONLY TWELF ITEMS OR LINKSs  --- keep disabled if not testing or developing -------------
+    // main_folder_links = main_folder_links.splice(0,1); // ------------   FOR TESTING RETURN ONLY TWELF ITEMS OR LINKSs  --- keep disabled if not testing or developing -------------
     
     // console.log(main_folder_links[7],main_folder_links[8],main_folder_links[9], main_folder_links.length);
 
