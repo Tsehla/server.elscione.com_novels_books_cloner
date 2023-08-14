@@ -189,87 +189,106 @@ var stats_data = {
 
     async function goto_navigator(url){
 
-      // console.log('-- navigator url : ', url)
 
-      // const browser = await puppeteer.launch({headless:false});
+      try{
+        // console.log('-- navigator url : ', url)
 
-      // const page = await browser.newPage();
-  
-      // Set the viewport for better rendering (optional)
-      // await page.setViewport({ width: 1280, height: 800 });
-  
-      //remove navigation timeout
+        // const browser = await puppeteer.launch({headless:false});
 
-      await page.goto(url, { waitUntil: 'networkidle2' });
-      
-      // await page.$("#mainrow");
-      // await page.$("#content");
-      // await page.$("#view");
-      // await page.$("#items");
-      // await page.$(".square");
-      // await page.$(".landscape");
+        // const page = await browser.newPage();
+    
+        // Set the viewport for better rendering (optional)
+        // await page.setViewport({ width: 1280, height: 800 });
+    
+        //remove navigation timeout
+            //remove navigation timeout
+        await page.setDefaultNavigationTimeout(0); 
 
-      await page.waitForSelector( "#mainrow", { visible: true,timeout:0 } );
-      await page.waitForSelector( "#content", { visible: true,timeout:0 } );
-      await page.waitForSelector( "#view", { visible: true ,timeout:0 } );
-      await page.waitForSelector( "#items", { visible: true ,timeout:0 } );
-      // await page.waitForSelector( ".square", { visible: true } );
-      // await page.waitForSelector( ".icons", { visible: true } );
-      // await page.waitForSelector( ".landscape", { visible: true } );
-      // await page.$(".landscape");
-
-      await page.waitForTimeout(12000); //wait body loads slow, the longer time wait the better
-
-      var result = await page.evaluate(() => {
-
+        await page.goto(url, { waitUntil: 'networkidle2' });
         
-        // const linkElements = document.querySelectorAll('a');
+        // await page.$("#mainrow");
+        // await page.$("#content");
+        // await page.$("#view");
+        // await page.$("#items");
+        // await page.$(".square");
+        // await page.$(".landscape");
 
-        // console.log(linkElements)
-        // return Array.from(linkElements).map(link => ({
-        //   href: link.href.replace('https://server.elscione.com/',''), //remover server addres so we can catch file extension using (.) later,
-        //   text: link.innerText.trim(),
-        //   procesed : false 
-        // }));
+        await page.waitForSelector( "#mainrow", { visible: true,timeout:0 } );
+        await page.waitForSelector( "#content", { visible: true,timeout:0 } );
+        await page.waitForSelector( "#view", { visible: true ,timeout:0 } );
+        await page.waitForSelector( "#items", { visible: true ,timeout:0 } );
+        // await page.waitForSelector( ".square", { visible: true } );
+        // await page.waitForSelector( ".icons", { visible: true } );
+        // await page.waitForSelector( ".landscape", { visible: true } );
+        // await page.$(".landscape");
+
+        await page.waitForTimeout(12000); //wait body loads slow, the longer time wait the better
+
+        var result = await page.evaluate(() => {
+
+          
+          // const linkElements = document.querySelectorAll('a');
+
+          // console.log(linkElements)
+          // return Array.from(linkElements).map(link => ({
+          //   href: link.href.replace('https://server.elscione.com/',''), //remover server addres so we can catch file extension using (.) later,
+          //   text: link.innerText.trim(),
+          //   procesed : false 
+          // }));
 
 
-        //get all with class  [ item folder ]
-        const linkElements = document.querySelectorAll('li.item.folder, li.item.file'); //node list//
+          //get all with class  [ item folder ]
+          const linkElements = document.querySelectorAll('li.item.folder, li.item.file'); //node list//
 
-        //-- save links
-        //link container
-        var links =[];
-        //loop
-        linkElements.forEach(node=>{
+          //-- save links
+          //link container
+          var links =[];
+          //loop
+          linkElements.forEach(node=>{
 
 
-          //check class does not contain navigation links class marker
-          if(node.className.search('folder-parent') == -1){//if so
+            //check class does not contain navigation links class marker
+            if(node.className.search('folder-parent') == -1){//if so
 
-            //save links
-            links.push({
-              href: node.getElementsByTagName('a')[0].href,//link href
-              text: node.getElementsByTagName('a')[0].innerText,//link text
-              procesed : false,
-            });
+              //save links
+              links.push({
+                href: node.getElementsByTagName('a')[0].href,//link href
+                text: node.getElementsByTagName('a')[0].innerText,//link text
+                procesed : false,
+              });
 
-          }
+            }
+
+          });
+
+          return links;
 
         });
 
-        return links;
-
-      });
 
 
+        //call navigation controller
 
-      //call navigation controller
+        // console.log('results -- url : '+ url, result)
 
-      // console.log('results -- url : '+ url, result)
+        controller (result) ;//--- PROBLEM GETS CALLED TOO EARLY, WHEN NETWOTRK SLOW
 
-      controller (result) ;//--- PROBLEM GETS CALLED TOO EARLY, WHEN NETWOTRK SLOW
+        // await browser.close()
 
-      // await browser.close()
+      }
+      catch(e){
+        
+        //log error
+        console.log('error, goto_navigator(), error = ' + e);
+
+        //call empty
+        controller();
+
+        //stats
+        stats_data.files_could_not_download_links.push(url);
+        stats_data.total_files_could_not_download = stats_data.total_files_could_not_download  + 1;
+
+      }
     }
 
 
