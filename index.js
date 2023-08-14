@@ -58,7 +58,13 @@ const { Console } = require('console');
 //start
 async function pupeteer(url, res){
 
-
+var stats_data = {
+  total_found_online_files : 0,
+  total_files_found_available_offline_matching_those_found_online : 0,
+  total_new_files_downloaded : 0,
+  total_files_could_not_download : 0,
+  files_could_not_download_links : [],
+}
   // const url = 'https://server.elscione.com/LNWNCentral%20Dump/';
 
   try {
@@ -569,6 +575,9 @@ async function pupeteer(url, res){
       });
 
 
+      
+      //capture stats
+      stats_data.total_found_online_files = complete_link.length;
 
       //check if folder structore with file/book to download axist on disk//if so remove link from links array
       complete_link.slice(0).forEach((file, index)=>{
@@ -612,13 +621,21 @@ async function pupeteer(url, res){
 
             console.error('file already available locally : '+path.resolve(__dirname,'./downloads/books/'+ file_to_folder +   decodeURIComponent(file.href.split('/')[file.href.split('/').length - 1] ) ))
             console.log('--splice 2-- ', complete_link.length);
+
+
+            //capture stats
+            stats_data.total_files_found_available_offline_matching_those_found_online = stats_data.total_files_found_available_offline_matching_those_found_online + 1;
+
+
           }
 
           
           else{
 
             //if file not exist
-            console.error('error file dont exist locally do download: '+path.resolve(__dirname,'./downloads/books/'+ file_to_folder +   decodeURIComponent(file.href.split('/')[file.href.split('/').length - 1] ) ))
+            console.error('error file dont exist locally do download: '+path.resolve(__dirname,'./downloads/books/'+ file_to_folder +   decodeURIComponent(file.href.split('/')[file.href.split('/').length - 1] ) ));
+
+   
           }
         } 
         catch(err) {
@@ -737,7 +754,7 @@ async function pupeteer(url, res){
               //check file downloaded
               if (fs.existsSync(path.resolve(__dirname,'./downloads/books/'+ file_folder +   decodeURIComponent(file_url.href.split('/')[file_url.href.split('/').length - 1] ) ))) { 
                 //file exists
-                console.log('file downloaded' + path.resolve(__dirname,'./downloads/books/'+ file_folder +  decodeURIComponent(file_url.href.split('/')[file_url.href.split('/').length - 1] )));
+                console.log('file downloaded : ' + path.resolve(__dirname,'./downloads/books/'+ file_folder +  decodeURIComponent(file_url.href.split('/')[file_url.href.split('/').length - 1] )));
                 // clear timer
                 clearInterval(download_tracker_timer);
 
@@ -753,6 +770,9 @@ async function pupeteer(url, res){
                   
                 //call controller
                 download_controller();
+
+                //capture stats 
+                stats_data.total_new_files_downloaded = stats_data.total_new_files_downloaded + 1;
 
               }
 
@@ -781,6 +801,13 @@ async function pupeteer(url, res){
                     
                   //call controller
                   download_controller();
+
+                  //capture stats
+                  stats_data.total_files_could_not_download = stats_data.total_files_could_not_download + 1;
+
+                  stats_data.files_could_not_download_links.push(file_url.href);
+
+
                 }
 
                 else {
@@ -835,8 +862,11 @@ async function pupeteer(url, res){
         }
         else {
           console.log('----++++ PROCESS COMPLETE ++++------, capture stats');
+
+          console.log(JSON.stringify(stats_data, 1,2))
           
           // await browser.close();//close browser
+
         }
 
       } download_controller(); //auto start
