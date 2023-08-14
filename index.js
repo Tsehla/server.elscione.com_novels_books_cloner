@@ -571,7 +571,7 @@ async function pupeteer(url, res){
 
 
       //check if folder structore with file/book to download axist on disk//if so remove link from links array
-      complete_link.forEach((file, index)=>{
+      complete_link.slice(0).forEach((file, index)=>{
 
 
         //decode url to text string, remove server domain and related, clean string of file unfriendly characters
@@ -596,8 +596,20 @@ async function pupeteer(url, res){
 
             //remove file from to download links
             console.log('--splice 1-- ', complete_link.length);
-            complete_link.splice(index,1);//delete link\
+
+
+            // complete_link.splice(index,1);//delete link\
             // console.log( 'splice ', complete_link.splice(index,1))
+            complete_link.splice(
+              complete_link.indexOf(file.href),
+              1
+            );//delete link\
+
+
+
+
+
+
             console.error('file already available locally : '+path.resolve(__dirname,'./downloads/books/'+ file_to_folder +   decodeURIComponent(file.href.split('/')[file.href.split('/').length - 1] ) ))
             console.log('--splice 2-- ', complete_link.length);
           }
