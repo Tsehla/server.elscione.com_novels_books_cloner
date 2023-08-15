@@ -670,6 +670,7 @@ var stats_data = {
       async function file_downloader (file_url) {
 
 
+        try {
         // console.log('-=- ', file_url)
 
         // //check download path exist or create if not
@@ -868,6 +869,33 @@ var stats_data = {
 
         // Close the browser.
         // await browser.close();
+
+        }
+        catch (e){//catch error
+
+          console.log('error, Problem downloading file '+file_url.href + ', error = '+e);
+
+
+          //remove link from download list
+          complete_link.splice(0,1);//remove itend on first index
+
+          //reset tracker
+          download_complete_tracker = 0;
+
+
+                 
+          await browser.close();//close browser//previus browser instances
+
+              
+          //call controller
+          download_controller();
+
+          //stats 
+          stats_data.files_could_not_download_links.push(file_url.href);
+          stats_data.total_files_could_not_download =   stats_data.total_files_could_not_download + 1;
+
+        }
+
       };
 
 
