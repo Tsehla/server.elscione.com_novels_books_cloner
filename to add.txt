@@ -1,0 +1,6 @@
+- choice between start download from scratch or continue donload when [ /downloads/links / ] folders has books direct links saved
+
+- save report to a file so you can manually download skipped files
+
+- may consider adding fast option for user to try as curent safe option that allows dom to load is very slow. so quick option may reduce dom wait times or something, just put a variable that allows or not [  // await page.waitForTimeout(12000); //wait body loads slow, the longer time wait the better
+] in whatever _navigator() function, for when contents scraping fails a lot

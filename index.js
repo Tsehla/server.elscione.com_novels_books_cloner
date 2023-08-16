@@ -52,22 +52,165 @@ const UserPreferencesPlugin = require("puppeteer-extra-plugin-user-preferences")
 
 const { Console } = require('console');
 
+//readline 
+
+const readline = require('readline');
+ 
+let rl = readline.createInterface(process.stdin, process.stdout);
+
 //LINKS PROBLEM, SOME SUBLINKS FROM MAIN LINKS CHILD LINKS ARE NOT LOOPED OR CONTAINED LINKS RETURNED.
 //OPTION TWO, GET ONLY LINKS WHITHIN A DIV FROM BROWSER RATHER THAN ALL LINKS IN A WEBPAGE, THIS WILL MAKE CODE SIMPLER
+
+//readlines inputs function
+function askQuestion(query) {
+
+  const rl = readline.createInterface({
+      input: process.stdin,
+      output: process.stdout,
+  });
+
+  return new Promise(resolve => rl.question(query, ans => {
+      rl.close();
+      resolve(ans);
+  }));
+
+
+}
+
 
 //start
 async function pupeteer(url, res){
 
-var stats_data = {
-  total_found_online_files : 0,
-  total_files_found_available_offline_matching_those_found_online : 0,
-  total_new_files_downloaded : 0,
-  total_files_could_not_download : 0,
-  files_could_not_download_links : [],
-}
+  var stats_data = {
+    total_found_online_files : 0,
+    total_files_found_available_offline_matching_those_found_online : 0,
+    total_new_files_downloaded : 0,
+    total_files_could_not_download : 0,
+    files_could_not_download_links : [],
+  }
+
+
+
   // const url = 'https://server.elscione.com/LNWNCentral%20Dump/';
 
-  try {
+    
+
+    try {
+
+      var complete_link = [];//links to files 
+
+      //process user controll ----
+      var fast_download_speed = true;
+      // var show_results_only = false;
+      var full_process_start = true;
+      var decide_speed;
+      var decide_start;
+
+      const show_results = await askQuestion("Process results, [ Yes ] to only show previous process results. Press [ Enter ] to skip.");
+
+      if(show_results || !show_results ){ //show previus results or give error
+
+        if(show_results ){ //if show results
+          
+          //show results
+          try{
+
+            var file_directory = fs.readdirSync(path.resolve(__dirname,'./downloads/results/'));
+        
+            //if there are contents in folder
+            if(file_directory.length > 1){
+              // console.log(files[files.length - 1]);  //last contents is latest one //maybe
+        
+              const file_contents = fs.readFileSync(path.resolve(__dirname,'./downloads/results/'+ file_directory[file_directory.length - 1]),{ encoding: 'utf8', flag: 'r' });
+        
+              console.log(JSON.parse(file_contents));
+            }
+        
+            if(file_directory.length < 1){
+        
+              console.log('Files not found, please have program run to completion once');
+            }
+        
+        
+            }
+            catch (e){
+              console.log('Files not found, please have program run to completion once : ' + e);
+            }
+            
+          // console.log('showing results')
+          
+          return; //end function
+    
+        }
+    
+        //ask question
+      decide_speed = await askQuestion("Decide Process speed, [ Yes ] for slow but very stable download speed. Press [ Enter  ] for quick downloading speed.");
+    
+    }
+
+
+      
+    if(decide_speed || !decide_speed){//slow download speed
+
+      //set speed
+      if(decide_speed){
+
+        fast_download_speed = false; //if false do slow download
+      }
+
+
+      //ask question
+      decide_start = await askQuestion("Decide Process Start, [ Yes ] to do download 'continuing' if possible. Press [ Enter ] to do full download and updates.");
+
+    }
+    
+    if(decide_start){ //full process start
+      
+      // full_process_start = false; //if false : do continue
+
+
+      //show results
+      try{
+
+        var file_directory = fs.readdirSync(path.resolve(__dirname,'./downloads/links/'));
+    
+        //if there are contents in folder
+        if(file_directory.length > 1){
+          // console.log(files[files.length - 1]);  //last contents is latest one //maybe
+
+          full_process_start = false; //set as false
+    
+          const file_contents = fs.readFileSync(path.resolve(__dirname,'./downloads/links/'+ file_directory[file_directory.length - 1]),{ encoding: 'utf8', flag: 'r' });
+    
+          // return console.log(JSON.parse(file_contents));
+
+         //add links 
+         complete_link = JSON.parse(file_contents);//links to files 
+
+         //call download controller or something
+         return download_manager();//call
+
+        }
+    
+        if(file_directory.length < 1){
+    
+          return console.log('Process continue, error [ /downloads/links/ ]  not found/empty, please have program run to completion once');
+        }
+    
+    
+        }
+        catch (e){
+          return console.log('Process continue, error [ /downloads/links/ ] not found/empty, please have program run to completion once : ' + e);
+        }
+        
+      // console.log('showing results')
+
+    }
+
+
+    // console.log(full_process_start, fast_download_speed)
+
+    // return
 
     // Launch a headless browser
     const browser = await puppeteer.launch({headless:false});
@@ -158,7 +301,7 @@ var stats_data = {
     // }
 
 
-    // main_folder_links = main_folder_links.splice(0,1); // ------------   FOR TESTING RETURN ONLY TWELF ITEMS OR LINKSs  --- keep disabled if not testing or developing -------------
+    main_folder_links = main_folder_links.splice(0,1); // ------------   FOR TESTING RETURN ONLY TWELF ITEMS OR LINKSs  --- keep disabled if not testing or developing -------------
     
     // console.log(main_folder_links[7],main_folder_links[8],main_folder_links[9], main_folder_links.length);
 
@@ -180,11 +323,16 @@ var stats_data = {
 
     // var links_cooking = [];//for temp link bulding
 
-    var complete_link = [];//links to files 
+    // var complete_link = [];//links to files 
 
     await page.waitForTimeout(9000); //wait for dom to build/load
 
     controller(main_folder_links); //call
+
+
+
+
+
 
 
     async function goto_navigator(url){
@@ -204,7 +352,9 @@ var stats_data = {
             //remove navigation timeout
         await page.setDefaultNavigationTimeout(0); 
 
-        await page.goto(url, { waitUntil: 'networkidle2' });
+        // await page.goto(url, { waitUntil: 'networkidle2' });
+        await page.goto(url, { waitUntil: 'networkidle0' });
+        
         
         // await page.$("#mainrow");
         // await page.$("#content");
@@ -222,7 +372,11 @@ var stats_data = {
         // await page.waitForSelector( ".landscape", { visible: true } );
         // await page.$(".landscape");
 
-        await page.waitForTimeout(12000); //wait body loads slow, the longer time wait the better
+        if(!fast_download_speed){
+          console.log('---- Slowing browser down ----');
+          await page.waitForTimeout(12000); //wait body loads slow, the longer time wait the better
+        }
+         
 
         var result = await page.evaluate(() => {
 
@@ -394,7 +548,13 @@ var stats_data = {
 
             console.log('complete link',subLink.href );
 
-            complete_link.push(subLink);
+            //check if duplicates
+            if(complete_link.indexOf(subLink) == -1){//if none
+
+              complete_link.push(subLink); //add
+              
+            }
+             
 
           }
 
@@ -409,10 +569,17 @@ var stats_data = {
               //do
               // if(links_cooking.length < 3){ //limit browse book sub folders from top//for testing or program development
 
-              main_folder_links.push(
+              //check if duplicates
+              if(main_folder_links.indexOf(subLink) == -1){//if none
 
-                    subLink //save this links
-                  )
+                main_folder_links.push(
+
+                  subLink //save this links
+                )
+
+              }
+
+
               // }
 
             // }
@@ -427,7 +594,8 @@ var stats_data = {
 
       
       // clear //all processed links
-      main_folder_links.forEach((processed_link, index)=>{
+      // main_folder_links.forEach((processed_link, index)=>{
+      main_folder_links.slice(0).forEach((processed_link, index)=>{
 
         if(processed_link.procesed){
           
@@ -435,7 +603,9 @@ var stats_data = {
 
           // console.log('-- 2 --',links_cooking);
 
-          main_folder_links.splice(index,1); //delete element of that index from array
+          console.log('++',main_folder_links.indexOf(processed_link))
+          // main_folder_links.splice(index,1); //delete element of that index from array
+          main_folder_links.splice( main_folder_links.indexOf(processed_link), 1); //delete element of that index from array
 
           // console.log('-- 2 --',links_cooking[index]);
 
@@ -492,7 +662,7 @@ var stats_data = {
 
         // browser.clo/se();//close browser
 
-        console.log('processing done : total links = ' + complete_link.length + ' , ' + JSON.stringify(complete_link,1,2));
+        console.log('processing done : total links = ' + complete_link.length + ' , ' + 'JSON.stringify(complete_link,1,2)');
 
         return download_manager();//call download
 
@@ -520,7 +690,7 @@ var stats_data = {
 
     async function download_manager(){
 
-      if(complete_link.length ==0){
+      if(complete_link.length == 0){
         return console.log('Error there are no download links');
       }
 
@@ -580,6 +750,8 @@ var stats_data = {
 
       await createDirectory('./downloads/links/'+complete_link[0].href.split('/')[2] );
 
+      await createDirectory('./downloads/results/'+complete_link[0].href.split('/')[2] );
+
 
 
       //save file //retrived links as json object file
@@ -629,13 +801,9 @@ var stats_data = {
             // complete_link.splice(index,1);//delete link\
             // console.log( 'splice ', complete_link.splice(index,1))
             complete_link.splice(
-              complete_link.indexOf(file.href),
+              complete_link.indexOf(file),
               1
             );//delete link\
-
-
-
-
 
 
             console.error('file already available locally : '+path.resolve(__dirname,'./downloads/books/'+ file_to_folder +   decodeURIComponent(file.href.split('/')[file.href.split('/').length - 1] ) ))
@@ -672,6 +840,10 @@ var stats_data = {
 
         try {
         // console.log('-=- ', file_url)
+
+        if(!full_process_start){
+          console.log('Process, called by continue : true');
+        }
 
         // //check download path exist or create if not
         const createDirectory = async (directoryName) => {
@@ -908,11 +1080,24 @@ var stats_data = {
           file_downloader(complete_link[0]).href;
         }
         else {
-          console.log('----++++ PROCESS COMPLETE ++++------, capture stats');
+          console.log('----++++ PROCESS COMPLETE ++++------');
 
           console.log(JSON.stringify(stats_data, 1,2))
           
           // await browser.close();//close browser
+          var date = new Date();
+
+          //save file //retrived links as json object file
+          var file_name = url.split('/')[2] +'/'+ date + '.json';
+
+          await fs.writeFile(path.resolve(__dirname,'./downloads/results/'+file_name.replaceAll(/[^A-Za-z0-9.\-_]/gi,'-')), JSON.stringify(stats_data,1,1),  err => {//clean file name of special characters
+            if (err) {
+
+              console.error('file save errors :' + path.resolve(__dirname,'./downloads/results/'+ file_name.replaceAll(/[^A-Za-z0-9.\-_]/gi,'-')), err);
+            }
+            // file written successfully
+          });
+
 
         }
 
