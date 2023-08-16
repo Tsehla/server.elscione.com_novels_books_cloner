@@ -4,3 +4,5 @@
 
 - may consider adding fast option for user to try as curent safe option that allows dom to load is very slow. so quick option may reduce dom wait times or something, just put a variable that allows or not [  // await page.waitForTimeout(12000); //wait body loads slow, the longer time wait the better
 ] in whatever _navigator() function, for when contents scraping fails a lot
+
+-- lol error handling is troublesome thing. its like adding dents on perfectly smooth curves, making the whole code troublesome. too bad handling errors assist in robust programe bulding
