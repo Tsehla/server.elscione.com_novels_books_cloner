@@ -213,7 +213,8 @@ async function pupeteer(url, res){
     // return
 
     // Launch a headless browser
-    const browser = await puppeteer.launch({headless:false});
+    // const browser = await puppeteer.launch({headless:false});
+    const browser = await puppeteer.launch();
     const page = await browser.newPage();
 
     // Set the viewport for better rendering (optional)
@@ -330,6 +331,8 @@ async function pupeteer(url, res){
     controller(main_folder_links); //call
 
 
+    await page.close();//close page
+
 
 
 
@@ -343,7 +346,7 @@ async function pupeteer(url, res){
 
         // const browser = await puppeteer.launch({headless:false});
 
-        // const page = await browser.newPage();
+        const page = await browser.newPage();
     
         // Set the viewport for better rendering (optional)
         // await page.setViewport({ width: 1280, height: 800 });
@@ -429,6 +432,8 @@ async function pupeteer(url, res){
 
         // await browser.close()
 
+        await page.close();//close page
+
       }
       catch(e){
         
@@ -443,6 +448,13 @@ async function pupeteer(url, res){
         stats_data.total_files_could_not_download = stats_data.total_files_could_not_download  + 1;
 
       }
+
+      // finally{
+
+      //   await page.close()
+
+      // }
+      
     }
 
 
