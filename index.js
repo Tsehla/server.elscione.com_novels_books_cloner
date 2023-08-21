@@ -78,6 +78,22 @@ function askQuestion(query) {
 }
 
 
+//app user control
+// var complete_link = [];//links to files 
+
+//---process user controll ----
+var fast_download_speed = true; //speed control
+// var show_results_only = false;//show results
+var full_process_start = true;//start method
+var decide_speed;//questins answers
+var decide_start;//questins answers
+var show_results;//questins answers
+
+
+
+
+var auto_retry_active = false;//if app was started by auto retry
+
 //start
 async function pupeteer(url, res){
 
@@ -102,14 +118,19 @@ async function pupeteer(url, res){
 
       var complete_link = [];//links to files 
 
-      //process user controll ----
-      var fast_download_speed = true;
-      // var show_results_only = false;
-      var full_process_start = true;
-      var decide_speed;
-      var decide_start;
+      // //process user controll ----
+      // var fast_download_speed = true;
+      // // var show_results_only = false;
+      // var full_process_start = true;
+      // var decide_speed;
+      // var decide_start;
 
-      const show_results = await askQuestion("Process results, [ Yes ] to only show previous process results. Press [ Enter ] to skip.");
+      if(!auto_retry_active){
+
+        // console.log('--000', auto_retry_active)
+        show_results = await askQuestion("Process results, [ Yes ] to only show previous process results. Press [ Enter ] to skip.");
+      }
+
 
       if(show_results || !show_results ){ //show previus results or give error
 
@@ -147,7 +168,10 @@ async function pupeteer(url, res){
         }
     
         //ask question
-      decide_speed = await askQuestion("Decide Process speed, [ Yes ] for slow but very stable download speed. Press [ Enter  ] for quick downloading speed.");
+        if(!auto_retry_active){
+          decide_speed = await askQuestion("Decide Process speed, [ Yes ] for slow but very stable download speed. Press [ Enter  ] for quick downloading speed.");
+        }
+     
     
     }
 
@@ -163,7 +187,10 @@ async function pupeteer(url, res){
 
 
       //ask question
-      decide_start = await askQuestion("Decide Process Start, [ Yes ] to do download 'continuing' if possible. Press [ Enter ] to do full download and updates.");
+      if(!auto_retry_active){
+        decide_start = await askQuestion("Decide Process Start, [ Yes ] to do download 'continuing' if possible. Press [ Enter ] to do full download and updates.");
+      }
+     
 
     }
     
@@ -211,6 +238,7 @@ async function pupeteer(url, res){
     }
 
 
+
     // console.log(full_process_start, fast_download_speed)
 
     // return
@@ -227,7 +255,30 @@ async function pupeteer(url, res){
     await page.setDefaultNavigationTimeout(0); 
 
     // Navigate to the URL and wait for network idle before extracting links
-    await page.goto(url, { waitUntil: 'networkidle2' });
+    // await page.goto(url, { waitUntil: 'networkidle2' });
+    await page.goto(url, { waitUntil: 'networkidle0' }).catch(e=>{
+
+      console.log('pupeteer(url): goto error '+ e+' , waiting ten (10) minutes to retry');
+
+      //set auto start
+      auto_retry_active = true;
+
+      //set timer then call controller
+       setTimeout(()=>{
+        console.log('timer done. resuming --- ')
+        //call empty
+        pupeteer(url);
+        //stats
+        stats_data.files_could_not_download_links.push(url);
+        stats_data.total_files_could_not_download = stats_data.total_files_could_not_download  + 1;
+
+      },600000 );
+
+    });
+
+    //remove auto start
+    // auto_retry_active = false;
+
 
     // await page.$("#items")
     await page.waitForSelector( "#mainrow", { visible: true,timeout:0 } );
@@ -359,7 +410,22 @@ async function pupeteer(url, res){
         await page.setDefaultNavigationTimeout(0); 
 
         // await page.goto(url, { waitUntil: 'networkidle2' });
-        await page.goto(url, { waitUntil: 'networkidle0' });
+        // await page.goto(url, { waitUntil: 'networkidle0' });
+        await page.goto(url, { waitUntil: 'networkidle0' }).catch(e=>{
+          console.log(' controller() : goto error '+ e+' , waiting ten (10) minutes to retry');
+
+          //set timer then call controller
+          setTimeout(()=>{
+            console.log('timer done. resuming --- ')
+            //call empty
+            controller();
+            //stats
+            stats_data.files_could_not_download_links.push(url);
+            stats_data.total_files_could_not_download = stats_data.total_files_could_not_download  + 1;
+
+          },600000 );
+
+        })
         
         
         // await page.$("#mainrow");
@@ -380,8 +446,10 @@ async function pupeteer(url, res){
 
         if(!fast_download_speed || connection_error_do_auto_browser_slowdown_temporarily){
 
-          // console.log('---- Slowing browser down ----');
+          console.log('---- Slowing browser down ----');
+
           if(!fast_download_speed){ console.log('---- Slowing browser down ----')}
+
           if(connection_error_do_auto_browser_slowdown_temporarily){ console.log('---- Auto, Slowing browser down ----')}
           
           await page.waitForTimeout(12000); //wait body loads slow, the longer time wait the better
@@ -933,7 +1001,23 @@ async function pupeteer(url, res){
         const page = await browser.newPage();
 
         // Navigate to the URL of the file to download.
-        await page.goto(file_directory, { waitUntil: 'networkidle0' });
+        // await page.goto(file_directory, { waitUntil: 'networkidle0' });
+        await page.goto(file_directory, { waitUntil: 'networkidle0' }).catch(e=>{
+
+          console.log('file_downloader (): goto err, '+ e+' , waiting ten (10) minutes to retry');
+
+          //set timer then call controller
+          setTimeout(()=>{
+            console.log('timer done. resuming --- ')
+            //call empty
+            file_downloader (file_url);
+            //stats
+            stats_data.files_could_not_download_links.push(url);
+            stats_data.total_files_could_not_download = stats_data.total_files_could_not_download  + 1;
+
+          },600000 );
+
+        })
 
 
         // await page._client().send("Page.setDownloadBehavior",{
