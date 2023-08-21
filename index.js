@@ -90,6 +90,9 @@ async function pupeteer(url, res){
   }
 
 
+  //handle conection errors
+  var connection_error_do_auto_browser_slowdown_temporarily = false;//if coonection error or whaterve browser will be slowdown on next run
+
 
   // const url = 'https://server.elscione.com/LNWNCentral%20Dump/';
 
@@ -375,9 +378,14 @@ async function pupeteer(url, res){
         // await page.waitForSelector( ".landscape", { visible: true } );
         // await page.$(".landscape");
 
-        if(!fast_download_speed){
-          console.log('---- Slowing browser down ----');
+        if(!fast_download_speed || connection_error_do_auto_browser_slowdown_temporarily){
+
+          // console.log('---- Slowing browser down ----');
+          if(!fast_download_speed){ console.log('---- Slowing browser down ----')}
+          if(connection_error_do_auto_browser_slowdown_temporarily){ console.log('---- Auto, Slowing browser down ----')}
+          
           await page.waitForTimeout(12000); //wait body loads slow, the longer time wait the better
+
         }
          
 
@@ -432,6 +440,10 @@ async function pupeteer(url, res){
 
         // await browser.close()
 
+        
+        //remve browser slowdon on next run
+        connection_error_do_auto_browser_slowdown_temporarily = false;
+
         await page.close();//close page
 
       }
@@ -443,9 +455,20 @@ async function pupeteer(url, res){
         //call empty
         controller();
 
+   
+
         //stats
         stats_data.files_could_not_download_links.push(url);
         stats_data.total_files_could_not_download = stats_data.total_files_could_not_download  + 1;
+
+
+        //do browser slowdon on next run
+        connection_error_do_auto_browser_slowdown_temporarily = true;
+
+        // if(page){
+          // await page.close()
+        // }
+
 
       }
 
@@ -904,12 +927,13 @@ async function pupeteer(url, res){
 
         // Create a new Puppeteer browser instance.
         const browser = await puppeteer.launch({headless:false});
+        // const browser = await puppeteer.launch({headless:true});
 
         // Create a new page in the browser.
         const page = await browser.newPage();
 
         // Navigate to the URL of the file to download.
-        await page.goto(file_directory);
+        await page.goto(file_directory, { waitUntil: 'networkidle0' });
 
 
         // await page._client().send("Page.setDownloadBehavior",{
@@ -925,7 +949,15 @@ async function pupeteer(url, res){
         await page.waitForSelector( "#items", { visible: true ,timeout:0 } );
 
 
-        await page.waitForTimeout(22000); //wait body loads slow, the longer time wait the better
+        // await page.waitForTimeout(22000); //wait body loads slow, the longer time wait the better
+
+        if(!fast_download_speed || connection_error_do_auto_browser_slowdown_temporarily){
+
+          // console.log('---- Slowing browser down : download part ----');
+          if(!fast_download_speed){ console.log('---- Slowing browser down : download part ----')}
+          if(connection_error_do_auto_browser_slowdown_temporarily){ console.log('---- Auto, Slowing browser down : download part ----')}
+          await page.waitForTimeout(22000); //wait body loads slow, the longer time wait the better
+        }
 
         // Find the download link element.
         // const downloadLink = await page.evaluate((url, filename_url ) => { 
@@ -944,7 +976,11 @@ async function pupeteer(url, res){
 
         },file_url); //pass argument to evaluate
 
-          // await page.pdf({ path: './xyz.pdf', format: 'A4' });
+        // await page.pdf({ path: './xyz.pdf', format: 'A4' });
+
+
+        //remove browser slowdon on next run
+        connection_error_do_auto_browser_slowdown_temporarily = false;
 
 
           //check if file is complete download every 5 seconds for 1 hour
@@ -1040,6 +1076,7 @@ async function pupeteer(url, res){
                      
               await browser.close();//close browser//previus browser instances
 
+
                   
               //call controller
               download_controller();
@@ -1069,6 +1106,9 @@ async function pupeteer(url, res){
 
                  
           await browser.close();//close browser//previus browser instances
+
+          //set browser slowdon on next run
+          connection_error_do_auto_browser_slowdown_temporarily = true;
 
               
           //call controller
