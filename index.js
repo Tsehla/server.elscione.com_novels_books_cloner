@@ -245,7 +245,7 @@ async function pupeteer(url, res){
 
     // Launch a headless browser
     // const browser = await puppeteer.launch({headless:false});
-    const browser = await puppeteer.launch();
+    const browser = await puppeteer.launch({protocolTimeout : 0});
     const page = await browser.newPage();
 
     // Set the viewport for better rendering (optional)
@@ -994,7 +994,7 @@ async function pupeteer(url, res){
 
 
         // Create a new Puppeteer browser instance.
-        const browser = await puppeteer.launch({headless:false});
+        const browser = await puppeteer.launch({headless:false,protocolTimeout : 0});
         // const browser = await puppeteer.launch({headless:true});
 
         // Create a new page in the browser.
@@ -1189,7 +1189,7 @@ async function pupeteer(url, res){
 
 
                  
-          await browser.close();//close browser//previus browser instances
+          // await browser.close();//close browser//previus browser instances
 
           //set browser slowdon on next run
           connection_error_do_auto_browser_slowdown_temporarily = true;
