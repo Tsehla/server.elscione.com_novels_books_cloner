@@ -188,7 +188,7 @@ async function pupeteer(url, res){
 
       //ask question
       if(!auto_retry_active){
-        decide_start = await askQuestion("Decide Process Start, [ Yes ] to do download 'continuing' if possible. Press [ Enter ] to do full download and updates.");
+        decide_start = await askQuestion("Decide Process Start, [ Yes ] to do download 'continuing' if possible. Press [ Enter ] to do full download and updates. Do not stop process before downloading starts as it will corrupt last/latest [.json] file in [downloads/links/], if corrupted delete last file en try.");
       }
      
 
@@ -893,6 +893,12 @@ async function pupeteer(url, res){
 
           // console.log('== ', path.resolve(__dirname,'./downloads/books/'+ ('.'+file_to_folder)))
 
+          var file_directory = []
+          
+          try{
+            file_directory= fs.readdirSync(path.resolve(__dirname,'./downloads/books/'+ file_to_folder));
+          }
+          catch(e){}
       
 
           if(fs.existsSync(path.resolve(__dirname,'./downloads/books/'+ file_to_folder +   decodeURIComponent(file.href.split('/')[file.href.split('/').length - 1] ) ))) {
@@ -921,6 +927,137 @@ async function pupeteer(url, res){
           }
 
           
+    
+          //if there are contents in folder
+          else if(file_directory.length > 0){ //issue with windows chrome, some downloaded pdf file dont contain full book name as seen in html link it seem link characters are limited to 60 or something, so i had to create ways to complement download complete methods
+
+            // console.log(file_directory)
+
+
+
+            for(file_name of file_directory){//loopd retrived books name
+
+              // console.log(
+              //   file_name.replaceAll(/[^a-zA-Z0-9]/gi,'').toLowerCase() , decodeURIComponent(file_url.href.split('/')[file_url.href.split('/').length - 1] ).replaceAll(/[^a-zA-Z0-9]/gi,'').toLowerCase(),
+                
+              //   file_name.replaceAll(/[^a-zA-Z0-9]/gi,'').toLowerCase().trim() == decodeURIComponent(file_url.href.split('/')[file_url.href.split('/').length - 1] ).replaceAll(/[^a-zA-Z0-9]/gi,'').toLowerCase().trim()
+              //   )
+
+
+              if(//remove special characters from link url file name and compare to file name of saved books in the folder
+                file_name.replaceAll(/[^a-zA-Z0-9]/gi,'').toLowerCase().trim() == decodeURIComponent(file.href.split('/')[file.href.split('/').length - 1] ).replaceAll(/[^a-zA-Z0-9]/gi,'').toLowerCase().trim()
+              ){
+
+               console.log('match found, method 1');
+               console.log('--splice 1-- ', complete_link.length);
+
+
+               // complete_link.splice(index,1);//delete link\
+               // console.log( 'splice ', complete_link.splice(index,1))
+               complete_link.splice(
+                 complete_link.indexOf(file),
+                 1
+               );//delete link\
+   
+   
+               console.error('file already available locally : '+path.resolve(__dirname,'./downloads/books/'+ file_to_folder +   decodeURIComponent(file.href.split('/')[file.href.split('/').length - 1] ) ))
+               console.log('--splice 2-- ', complete_link.length);
+   
+   
+               //capture stats
+               stats_data.total_files_found_available_offline_matching_those_found_online = stats_data.total_files_found_available_offline_matching_those_found_online + 1;
+
+
+               return 
+
+              }
+
+              // console.log(file_name.replaceAll(/[^a-zA-Z0-9]/gi,'').slice(0,60) == decodeURIComponent(file_url.href.split('/')[file_url.href.split('/').length - 1] ).replaceAll(/[^a-zA-Z0-9]/gi,'').slice(0,57), file_name.replaceAll(/[^a-zA-Z0-9]/gi,'').slice(0,57) , decodeURIComponent(file_url.href.split('/')[file_url.href.split('/').length - 1] ).replaceAll(/[^a-zA-Z0-9]/gi,'').slice(0,60))
+
+              if( //limit files names to 60 chars and try to find match
+                file_name.replaceAll(/[^a-zA-Z0-9]/gi,'').slice(0,60) == decodeURIComponent(file.href.split('/')[file.href.split('/').length - 1] ).replaceAll(/[^a-zA-Z0-9]/gi,'').slice(0,60)
+              ){
+
+               console.log('match found, method  2');
+               console.log('--splice 1-- ', complete_link.length);
+
+
+               // complete_link.splice(index,1);//delete link\
+               // console.log( 'splice ', complete_link.splice(index,1))
+               complete_link.splice(
+                 complete_link.indexOf(file),
+                 1
+               );//delete link\
+   
+   
+               console.error('file already available locally : '+path.resolve(__dirname,'./downloads/books/'+ file_to_folder +   decodeURIComponent(file.href.split('/')[file.href.split('/').length - 1] ) ))
+               console.log('--splice 2-- ', complete_link.length);
+   
+   
+               //capture stats
+               stats_data.total_files_found_available_offline_matching_those_found_online = stats_data.total_files_found_available_offline_matching_those_found_online + 1;
+
+
+               return 
+
+              }
+
+
+              //option 3  //find match in file link name from saved file name, with special characters removed, and file extensions --THIS METHOD IS LESS ACURATE THE SHORTER FILE NAME BEING MATCH IS THE MORE LESS ACCURATE
+              var a =   decodeURIComponent(file.href.split('/')[file.href.split('/').length - 1] ).split('.')[0].replaceAll(/[^a-zA-Z0-9]/gi,'');
+
+              var b = file_name.split('.')[0].replaceAll(/[^a-zA-Z0-9]/gi,'');
+
+              // console.log('----');
+
+              // console.log(  
+              // a,b, a.indexOf(b),b.indexOf(a)
+
+              // )
+
+              // console.log('-------')
+              if( //
+              a.indexOf(b) > -1 || b.indexOf(a) > -1
+              ){
+
+                console.log('match found, method  3');
+                console.log('--splice 1-- ', complete_link.length);
+
+
+                // complete_link.splice(index,1);//delete link\
+                // console.log( 'splice ', complete_link.splice(index,1))
+                complete_link.splice(
+                  complete_link.indexOf(file),
+                  1
+                );//delete link\
+    
+    
+                console.error('file already available locally : '+path.resolve(__dirname,'./downloads/books/'+ file_to_folder +   decodeURIComponent(file.href.split('/')[file.href.split('/').length - 1] ) ))
+                console.log('--splice 2-- ', complete_link.length);
+    
+    
+                //capture stats
+                stats_data.total_files_found_available_offline_matching_those_found_online = stats_data.total_files_found_available_offline_matching_those_found_online + 1;
+
+              
+
+              }
+
+
+
+
+            }
+              
+   
+          }
+
+
+
+
+
+
+
+          
           else{
 
             //if file not exist
@@ -943,238 +1080,401 @@ async function pupeteer(url, res){
 
 
         try {
-        // console.log('-=- ', file_url)
+          // console.log('-=- ', file_url)
 
-        if(!full_process_start){
-          console.log('Process, called by continue : true');
-        }
-
-        // //check download path exist or create if not
-        const createDirectory = async (directoryName) => {
-
-          // Check if the directory already exists.
-          const exists = await fs.existsSync(directoryName);
-        
-          // If the directory does not exist, create it.
-          if (!exists) {
-            await fs.mkdirSync(directoryName,  {recursive: true});
+          if(!full_process_start){
+            console.log('Process, called by continue : true');
           }
 
-        };
+          // //check download path exist or create if not
+          const createDirectory = async (directoryName) => {
 
-        //fuile url
-        // var file_url = url + filename_url;//file complete url/direct link
-
-        var file_directory =  file_url.href.replace( file_url.href.split('/')[file_url.href.split('/').length - 1], '');//remove file name
-
-        //file url to folder structure
-        var file_folder = decodeURIComponent(file_directory.replace(file_directory.split('/')[2], '').replace('https','').replace('http','').replace('://','').replace(/[/]/gi,'\\')).replaceAll(/[^A-Za-z0-9.\-_/\s\\]/gi,'-'); 
-        
-        await createDirectory('./downloads/books/'+ file_folder );//call directory create
-        
-
-        // const downloadImageDirectoryPath = process.cwd();
-
-        // return console.log(file_folder)
-
-        puppeteer.use(
+            // Check if the directory already exists.
+            const exists = await fs.existsSync(directoryName);
           
-          UserPreferencesPlugin({
-            userPrefs: {
-              download: {
-                prompt_for_download: false,
-                open_pdf_in_system_reader: true,
-                default_directory: path.resolve(__dirname,'./downloads/books/'+ file_folder),
+            // If the directory does not exist, create it.
+            if (!exists) {
+              await fs.mkdirSync(directoryName,  {recursive: true});
+            }
+
+          };
+
+          //fuile url
+          // var file_url = url + filename_url;//file complete url/direct link
+
+          var file_directory =  file_url.href.replace( file_url.href.split('/')[file_url.href.split('/').length - 1], '');//remove file name
+
+          //file url to folder structure
+          var file_folder = decodeURIComponent(file_directory.replace(file_directory.split('/')[2], '').replace('https','').replace('http','').replace('://','').replace(/[/]/gi,'\\')).replaceAll(/[^A-Za-z0-9.\-_/\s\\]/gi,'-'); 
+          
+          await createDirectory('./downloads/books/'+ file_folder );//call directory create
+          
+
+          // const downloadImageDirectoryPath = process.cwd();
+
+          // return console.log(file_folder)
+
+          puppeteer.use(
+            
+            UserPreferencesPlugin({
+              userPrefs: {
+                download: {
+                  prompt_for_download: false,
+                  open_pdf_in_system_reader: true,
+                  default_directory: path.resolve(__dirname,'./downloads/books/'+ file_folder),
+                },
+                plugins: {
+                  always_open_pdf_externally: true,
+                },
               },
-              plugins: {
-                always_open_pdf_externally: true,
-              },
-            },
+            })
+          );
+
+
+          // Create a new Puppeteer browser instance.
+          // const browser = await puppeteer.launch({headless:false,protocolTimeout : 0});
+          // const browser = await puppeteer.launch({headless:true,protocolTimeout : 0}); //--- SEEM NOT TO SUPPORT DOWNLOADS
+          const browser = await puppeteer.launch({headless:'new',protocolTimeout : 0});
+
+          // Create a new page in the browser.
+          const page = await browser.newPage();
+
+          // Navigate to the URL of the file to download.
+          // await page.goto(file_directory, { waitUntil: 'networkidle0' });
+          await page.goto(file_directory, { waitUntil: 'networkidle0' }).catch(e=>{
+
+            console.log('file_downloader (): goto err, '+ e+' , waiting ten (10) minutes to retry');
+
+            //set timer then call controller
+            setTimeout(()=>{
+              console.log('timer done. resuming --- ')
+              //call empty
+              file_downloader (file_url);
+              //stats
+              stats_data.files_could_not_download_links.push(url);
+              stats_data.total_files_could_not_download = stats_data.total_files_could_not_download  + 1;
+
+            },600000 );
+
           })
-        );
 
 
-        // Create a new Puppeteer browser instance.
-        const browser = await puppeteer.launch({headless:false,protocolTimeout : 0});
-        // const browser = await puppeteer.launch({headless:true});
+          // await page._client().send("Page.setDownloadBehavior",{
+          //   behavior : "allow",
+          //   downloadPath : "./"
+          // })
 
-        // Create a new page in the browser.
-        const page = await browser.newPage();
+          // await page.$(".landscape");
 
-        // Navigate to the URL of the file to download.
-        // await page.goto(file_directory, { waitUntil: 'networkidle0' });
-        await page.goto(file_directory, { waitUntil: 'networkidle0' }).catch(e=>{
-
-          console.log('file_downloader (): goto err, '+ e+' , waiting ten (10) minutes to retry');
-
-          //set timer then call controller
-          setTimeout(()=>{
-            console.log('timer done. resuming --- ')
-            //call empty
-            file_downloader (file_url);
-            //stats
-            stats_data.files_could_not_download_links.push(url);
-            stats_data.total_files_could_not_download = stats_data.total_files_could_not_download  + 1;
-
-          },600000 );
-
-        })
+          await page.waitForSelector( "#mainrow", { visible: true,timeout:6000 } );
+          await page.waitForSelector( "#content", { visible: true,timeout:6000 } );
+          await page.waitForSelector( "#view", { visible: true ,timeout:6000 } );
+          await page.waitForSelector( "#items", { visible: true ,timeout:6000 } );
 
 
-        // await page._client().send("Page.setDownloadBehavior",{
-        //   behavior : "allow",
-        //   downloadPath : "./"
-        // })
+          // await page.waitForTimeout(22000); //wait body loads slow, the longer time wait the better
 
-        // await page.$(".landscape");
+          if(!fast_download_speed || connection_error_do_auto_browser_slowdown_temporarily){
 
-        await page.waitForSelector( "#mainrow", { visible: true,timeout:6000 } );
-        await page.waitForSelector( "#content", { visible: true,timeout:6000 } );
-        await page.waitForSelector( "#view", { visible: true ,timeout:6000 } );
-        await page.waitForSelector( "#items", { visible: true ,timeout:6000 } );
+            // console.log('---- Slowing browser down : download part ----');
+            if(!fast_download_speed){ console.log('---- Slowing browser down : download part ----')}
+            if(connection_error_do_auto_browser_slowdown_temporarily){ console.log('---- Auto, Slowing browser down : download part ----')}
+            await page.waitForTimeout(22000); //wait body loads slow, the longer time wait the better
+          }
 
-
-        // await page.waitForTimeout(22000); //wait body loads slow, the longer time wait the better
-
-        if(!fast_download_speed || connection_error_do_auto_browser_slowdown_temporarily){
-
-          // console.log('---- Slowing browser down : download part ----');
-          if(!fast_download_speed){ console.log('---- Slowing browser down : download part ----')}
-          if(connection_error_do_auto_browser_slowdown_temporarily){ console.log('---- Auto, Slowing browser down : download part ----')}
-          await page.waitForTimeout(22000); //wait body loads slow, the longer time wait the better
-        }
-
-        // Find the download link element.
-        // const downloadLink = await page.evaluate((url, filename_url ) => { 
+          // Find the download link element.
+          // const downloadLink = await page.evaluate((url, filename_url ) => { 
+            
+          //   console.log('--',url, filename_url )
+          //   return document.querySelector('a[href="' + url + filename_url + '"]'); 
           
-        //   console.log('--',url, filename_url )
-        //   return document.querySelector('a[href="' + url + filename_url + '"]'); 
-        
-        // },url, filename_url);
+          // },url, filename_url);
 
-        //find href with that link 
-        await page.evaluate((file_url) => {
+          //find href with that link 
+          await page.evaluate((file_url) => {
 
-          //clik anchor
-          [...document.querySelectorAll('a')].find(element => element.href === (file_url.href)).click();
+            //clik anchor
+            [...document.querySelectorAll('a')].find(element => element.href === (file_url.href)).click();
 
 
-        },file_url); //pass argument to evaluate
+          },file_url); //pass argument to evaluate
 
-        // await page.pdf({ path: './xyz.pdf', format: 'A4' });
-
-
-        //remove browser slowdon on next run
-        connection_error_do_auto_browser_slowdown_temporarily = false;
+          // await page.pdf({ path: './xyz.pdf', format: 'A4' });
 
 
-          //check if file is complete download every 5 seconds for 1 hour
-          var download_complete_tracker = 0;
-
-          var download_tracker_timer = setInterval( async ()=>{
-            //check the file : 
-            try {
+          //remove browser slowdon on next run
+          connection_error_do_auto_browser_slowdown_temporarily = false;
 
 
-              //check file downloaded
-              if (fs.existsSync(path.resolve(__dirname,'./downloads/books/'+ file_folder +   decodeURIComponent(file_url.href.split('/')[file_url.href.split('/').length - 1] ) ))) { 
-                //file exists
-                console.log('file downloaded : ' + path.resolve(__dirname,'./downloads/books/'+ file_folder +  decodeURIComponent(file_url.href.split('/')[file_url.href.split('/').length - 1] )));
-                // clear timer
-                clearInterval(download_tracker_timer);
+            //check if file is complete download every 5 seconds for 1 hour
+            var download_complete_tracker = 0;
 
-                //reset tracker
-                download_complete_tracker = 0;
+            var download_tracker_timer = setInterval( async ()=>{
+              //check the file : 
+              try {
 
-                //remove link from array
-                complete_link.splice(0,1);//remove itend on first index
 
-                
-                await browser.close();//close browser//previus browser instances
-
-                  
-                //call controller
-                download_controller();
-
-                //capture stats 
-                stats_data.total_new_files_downloaded = stats_data.total_new_files_downloaded + 1;
-
-              }
-
-              //check if not file downloaded
-              else {
-
-                //check timer tracker
-                // if(download_complete_tracker > 240){//20minuste
-                if(download_complete_tracker > 720){//1 hour
-
+                //check file downloaded
+                if (fs.existsSync(path.resolve(__dirname,'./downloads/books/'+ file_folder +   decodeURIComponent(file_url.href.split('/')[file_url.href.split('/').length - 1] ) ))) { 
+                  //file exists
+                  console.log('file downloaded : ' + path.resolve(__dirname,'./downloads/books/'+ file_folder +  decodeURIComponent(file_url.href.split('/')[file_url.href.split('/').length - 1] )));
                   // clear timer
                   clearInterval(download_tracker_timer);
 
                   //reset tracker
                   download_complete_tracker = 0;
 
-                  //give error
-                  console.log("Checking [download complete] suspended for file after 240 tries after 5 seconds interval : " + path.resolve(__dirname,'./downloads/books/'+ file_folder +  decodeURIComponent(file_url.href.split('/')[file_url.href.split('/').length - 1] )));
-
                   //remove link from array
                   complete_link.splice(0,1);//remove itend on first index
 
-                          
+                  
                   await browser.close();//close browser//previus browser instances
 
                     
                   //call controller
                   download_controller();
 
-                  //capture stats
-                  stats_data.total_files_could_not_download = stats_data.total_files_could_not_download + 1;
-
-                  stats_data.files_could_not_download_links.push(file_url.href);
-
+                  //capture stats 
+                  stats_data.total_new_files_downloaded = stats_data.total_new_files_downloaded + 1;
 
                 }
 
+                //check if not file downloaded
                 else {
 
-                  //if file not exist
-                  console.error('waiting for download to complete for file in : '+path.resolve(__dirname,'./downloads/books/'+ file_folder + decodeURIComponent( file_url.href.split('/')[file_url.href.split('/').length - 1] )) +', try number [' +download_complete_tracker+'/720]');
+                  //check timer tracker
+                  // if(download_complete_tracker > 240){//20minuste
+                  if(download_complete_tracker > 720){//1 hour
 
-                  //increase
-                  download_complete_tracker = download_complete_tracker + 1;
+                    // clear timer
+                    clearInterval(download_tracker_timer);
 
+                    //reset tracker
+                    download_complete_tracker = 0;
+
+                    //give error
+                    console.log("Checking [download complete] suspended for file after 240 tries after 5 seconds interval : " + path.resolve(__dirname,'./downloads/books/'+ file_folder +  decodeURIComponent(file_url.href.split('/')[file_url.href.split('/').length - 1] )));
+
+                    //remove link from array
+                    complete_link.splice(0,1);//remove itend on first index
+
+                            
+                    await browser.close();//close browser//previus browser instances
+
+                      
+                    //call controller
+                    download_controller();
+
+                    //capture stats
+                    stats_data.total_files_could_not_download = stats_data.total_files_could_not_download + 1;
+
+                    stats_data.files_could_not_download_links.push(file_url.href);
+
+
+                  }
+
+                  else {
+
+
+                    //try option 2 checking
+                    try{
+
+
+                      var file_directory = fs.readdirSync(path.resolve(__dirname,'./downloads/books/'+ file_folder));
+    
+                      //if there are contents in folder
+                      if(file_directory.length > 0){ //issue with windows chrome, some downloaded pdf file dont contain full book name as seen in html link it seem link characters are limited to 60 or something, so i had to create ways to complement download complete methods
+
+                        // console.log(file_directory)
+
+
+
+                        for(file_name of file_directory){//loopd retrived books name
+
+                          // console.log(
+                          //   file_name.replaceAll(/[^a-zA-Z0-9]/gi,'').toLowerCase() , decodeURIComponent(file_url.href.split('/')[file_url.href.split('/').length - 1] ).replaceAll(/[^a-zA-Z0-9]/gi,'').toLowerCase(),
+                            
+                          //   file_name.replaceAll(/[^a-zA-Z0-9]/gi,'').toLowerCase().trim() == decodeURIComponent(file_url.href.split('/')[file_url.href.split('/').length - 1] ).replaceAll(/[^a-zA-Z0-9]/gi,'').toLowerCase().trim()
+                          //   )
+
+
+                          if(//remove special characters from link url file name and compare to file name of saved books in the folder
+                            file_name.replaceAll(/[^a-zA-Z0-9]/gi,'').toLowerCase().trim() == decodeURIComponent(file_url.href.split('/')[file_url.href.split('/').length - 1] ).replaceAll(/[^a-zA-Z0-9]/gi,'').toLowerCase().trim()
+                          ){
+
+                           console.log('match found, method 1');
+
+                            //remove link from download list
+                            complete_link.splice(0,1);//remove itend on first index
+
+                            //reset tracker
+                            download_complete_tracker = 0;
+
+                            // clear timer
+                            clearInterval(download_tracker_timer);
+
+                                  
+                            await browser.close();//close browser//previus browser instances
+
+
+                                
+                            //call controller
+                            download_controller();
+
+
+                           return 
+
+                          }
+
+                          // console.log(file_name.replaceAll(/[^a-zA-Z0-9]/gi,'').slice(0,60) == decodeURIComponent(file_url.href.split('/')[file_url.href.split('/').length - 1] ).replaceAll(/[^a-zA-Z0-9]/gi,'').slice(0,57), file_name.replaceAll(/[^a-zA-Z0-9]/gi,'').slice(0,57) , decodeURIComponent(file_url.href.split('/')[file_url.href.split('/').length - 1] ).replaceAll(/[^a-zA-Z0-9]/gi,'').slice(0,60))
+
+                          if( //limit files names to 60 chars and try to find match
+                            file_name.replaceAll(/[^a-zA-Z0-9]/gi,'').slice(0,60) == decodeURIComponent(file_url.href.split('/')[file_url.href.split('/').length - 1] ).replaceAll(/[^a-zA-Z0-9]/gi,'').slice(0,60)
+                          ){
+
+                           console.log('match found, method  2');
+
+
+                            //remove link from download list
+                            complete_link.splice(0,1);//remove itend on first index
+
+                            //reset tracker
+                            download_complete_tracker = 0;
+
+                            // clear timer
+                            clearInterval(download_tracker_timer);
+
+                                  
+                            await browser.close();//close browser//previus browser instances
+
+
+                                
+                            //call controller
+                            download_controller();
+
+
+
+                           return 
+
+                          }
+
+
+                          //option 3  //find match in file link name from saved file name, with special characters removed, and file extensions --THIS METHOD IS LESS ACURATE THE SHORTER FILE NAME BEING MATCH IS THE MORE LESS ACCURATE
+                          var a =   decodeURIComponent(file_url.href.split('/')[file_url.href.split('/').length - 1] ).split('.')[0].replaceAll(/[^a-zA-Z0-9]/gi,'');
+
+                          var b = file_name.split('.')[0].replaceAll(/[^a-zA-Z0-9]/gi,'');
+
+                          // console.log('----');
+
+                          console.log(  
+                          a,b, a.indexOf(b),b.indexOf(a)
+
+                          )
+
+                          // console.log('-------')
+                          if( //
+                          a.indexOf(b) > -1 || b.indexOf(a) > -1
+                          ){
+
+                            console.log('match found, method  3');
+
+                            //remove link from download list
+                            complete_link.splice(0,1);//remove itend on first index
+
+                            //reset tracker
+                            download_complete_tracker = 0;
+
+                            // clear timer
+                            clearInterval(download_tracker_timer);
+
+                                  
+                            await browser.close();//close browser//previus browser instances
+
+
+                                
+                            //call controller
+                            download_controller();
+
+                            return 
+
+                          }
+
+
+
+
+                        }
+                          
+                        // //remove link from download list
+                        // complete_link.splice(0,1);//remove itend on first index
+
+                        // //reset tracker
+                        // download_complete_tracker = 0;
+
+                        // // clear timer
+                        // clearInterval(download_tracker_timer);
+
+                              
+                        // await browser.close();//close browser//previus browser instances
+
+
+                            
+                        // //call controller
+                        // download_controller();
+                    
+
+
+                        // return;
+                      }
+
+
+                    }
+                    catch(error){
+                      console.log('download file ched option2 error : ' + error);
+                    }
+
+
+
+
+                    //if file not exist
+                    console.error('waiting for download to complete for file in : '+path.resolve(__dirname,'./downloads/books/'+ file_folder + decodeURIComponent( file_url.href.split('/')[file_url.href.split('/').length - 1] )) +', try number [' +download_complete_tracker+'/720]');
+
+                    //increase
+                    download_complete_tracker = download_complete_tracker + 1;
+
+                  }
+        
                 }
-      
+              } 
+              catch (e){//catch error
+                console.log('download complete checking error for file '+file_url.href + ', error = '+e);
+
+
+                //remove link from download list
+                complete_link.splice(0,1);//remove itend on first index
+
+                //reset tracker
+                download_complete_tracker = 0;
+
+                // clear timer
+                clearInterval(download_tracker_timer);
+
+                      
+                await browser.close();//close browser//previus browser instances
+
+
+                    
+                //call controller
+                download_controller();
               }
-            } 
-            catch (e){//catch error
-              console.log('download complete checking error for file '+file_url.href + ', error = '+e);
-
-
-              //remove link from download list
-              complete_link.splice(0,1);//remove itend on first index
-
-              //reset tracker
-              download_complete_tracker = 0;
-
-
-                     
-              await browser.close();//close browser//previus browser instances
-
-
-                  
-              //call controller
-              download_controller();
-            }
 
 
 
-          }, 5000);
+            }, 5000);
 
 
 
-        // Close the browser.
-        // await browser.close();
+          // Close the browser.
+          // await browser.close();
 
         }
         catch (e){//catch error
@@ -1212,6 +1512,8 @@ async function pupeteer(url, res){
       async function download_controller(){
         //if there are still links to downlod
         if(complete_link.length > 0){ 
+
+          //
 
           //then send first link for download
           file_downloader(complete_link[0]).href;
