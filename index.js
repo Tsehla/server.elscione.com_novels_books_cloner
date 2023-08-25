@@ -215,6 +215,7 @@ async function pupeteer(url, res){
           // return console.log(JSON.parse(file_contents));
 
          //add links 
+        //  complete_link = JSON.parse(file_contents);//links to files 
          complete_link = JSON.parse(file_contents);//links to files 
 
          //call download controller or something
@@ -1027,10 +1028,10 @@ async function pupeteer(url, res){
 
         // await page.$(".landscape");
 
-        await page.waitForSelector( "#mainrow", { visible: true,timeout:0 } );
-        await page.waitForSelector( "#content", { visible: true,timeout:0 } );
-        await page.waitForSelector( "#view", { visible: true ,timeout:0 } );
-        await page.waitForSelector( "#items", { visible: true ,timeout:0 } );
+        await page.waitForSelector( "#mainrow", { visible: true,timeout:6000 } );
+        await page.waitForSelector( "#content", { visible: true,timeout:6000 } );
+        await page.waitForSelector( "#view", { visible: true ,timeout:6000 } );
+        await page.waitForSelector( "#items", { visible: true ,timeout:6000 } );
 
 
         // await page.waitForTimeout(22000); //wait body loads slow, the longer time wait the better
