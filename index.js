@@ -1116,12 +1116,16 @@ async function pupeteer(url, res){
 
           puppeteer.use(
             
-            UserPreferencesPlugin({
+            UserPreferencesPlugin({  //https://android.googlesource.com/platform/external/chromium/+/ics-aah-release/chrome/common/pref_names.cc
               userPrefs: {
                 download: {
                   prompt_for_download: false,
                   open_pdf_in_system_reader: true,
                   default_directory: path.resolve(__dirname,'./downloads/books/'+ file_folder),
+                },
+                savefile : {
+                  default_directory : path.resolve(__dirname,'./downloads/books/'+ file_folder),
+                  type : file_url.split('.')[file_url.split('.').length -1 ], //return extension of expected file, from file url
                 },
                 plugins: {
                   always_open_pdf_externally: true,
@@ -1366,10 +1370,10 @@ async function pupeteer(url, res){
 
                           // console.log('----');
 
-                          console.log(  
-                          a,b, a.indexOf(b),b.indexOf(a)
+                          // console.log(  
+                          // a,b, a.indexOf(b),b.indexOf(a)
 
-                          )
+                          // )
 
                           // console.log('-------')
                           if( //
