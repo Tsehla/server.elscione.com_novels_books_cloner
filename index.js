@@ -1114,6 +1114,8 @@ async function pupeteer(url, res){
 
           // return console.log(file_folder)
 
+          console.log('-==', file_url.href.split('.')[file_url.href.split('.').length -1 ])
+
           puppeteer.use(
             
             UserPreferencesPlugin({  //https://android.googlesource.com/platform/external/chromium/+/ics-aah-release/chrome/common/pref_names.cc
@@ -1125,7 +1127,7 @@ async function pupeteer(url, res){
                 },
                 savefile : {
                   default_directory : path.resolve(__dirname,'./downloads/books/'+ file_folder),
-                  type : file_url.split('.')[file_url.split('.').length -1 ], //return extension of expected file, from file url
+                  type : (file_url.href.split('.')[file_url.href.split('.').length -1 ]), //return extension of expected file, from file url application/
                 },
                 plugins: {
                   always_open_pdf_externally: true,
@@ -1178,7 +1180,12 @@ async function pupeteer(url, res){
 
           // await page.waitForTimeout(22000); //wait body loads slow, the longer time wait the better
 
+          var download_complete_checks_retries = 120;//120 times= 10 minutes;
+
           if(!fast_download_speed || connection_error_do_auto_browser_slowdown_temporarily){
+
+            //set
+            download_complete_checks_retries = 720; //1 hour
 
             // console.log('---- Slowing browser down : download part ----');
             if(!fast_download_speed){ console.log('---- Slowing browser down : download part ----')}
@@ -1248,7 +1255,9 @@ async function pupeteer(url, res){
 
                   //check timer tracker
                   // if(download_complete_tracker > 240){//20minuste
-                  if(download_complete_tracker > 720){//1 hour
+                  // if(download_complete_tracker > 720){//1 hour 
+                  // if(download_complete_tracker > 120){//10 minutes
+                  if(download_complete_tracker > download_complete_checks_retries){//10 minutes default
 
                     // clear timer
                     clearInterval(download_tracker_timer);
@@ -1523,9 +1532,10 @@ async function pupeteer(url, res){
           file_downloader(complete_link[0]).href;
         }
         else {
-          console.log('----++++ PROCESS COMPLETE ++++------');
+          console.log('----++++ PROCESS COMPLETE ++++------ below stats');
 
           console.log(JSON.stringify(stats_data, 1,2))
+          console.log('----++++ PROCESS COMPLETE ++++------ above stats');
           
           // await browser.close();//close browser
           var date = new Date();
