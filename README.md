@@ -8,7 +8,7 @@ simple nodejs [ server.elscione.com ] books cloner or automated downloading
 
 <br>
 -- Features<br>
--> inteactive console (webFig no longer necessary)<br>
+-> inteactive console (webConP : [web control panel ] no longer necessary)<br>
 -> View process logs<br>
 -> Resume download<br>
 -> Auto update downloads (new files only)<br>
