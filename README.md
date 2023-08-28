@@ -14,7 +14,7 @@ simple nodejs [ server.elscione.com ] books cloner or automated downloading
 -> Auto update downloads (new files only)<br>
 
 <br>
--- Limitations<br>
+-- Limitations known<br>
 -> Files with long names wont download (windows or windows puppeteer problem, maybe it may work beteer on linux.  -\_('-')_/-  );<br>
 -> Folders/directories that contains period/fullstop (.)  in their names wont download (This is site limitation to disable direct file downloading, this limitation can be solved easily programmically, but there are few of directories names with such issue) latest report will contain files that failed to download on latest run, so you can manual download.<br>
 
