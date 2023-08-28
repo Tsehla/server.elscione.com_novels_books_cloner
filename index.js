@@ -258,15 +258,30 @@ async function pupeteer(url, res){
 
     // Navigate to the URL and wait for network idle before extracting links
     // await page.goto(url, { waitUntil: 'networkidle2' });
-    await page.goto(url, { waitUntil: 'networkidle0' }).catch(e=>{
+    var page_goto_results_b = await page.goto(url, { waitUntil: 'networkidle0' }).catch(e=>{
 
       console.log('pupeteer(url): goto error '+ e+' , waiting ten (10) minutes to retry');
 
       //set auto start
       auto_retry_active = true;
 
+      // //set timer then call controller
+      //  setTimeout(()=>{
+      //   console.log('timer done. resuming --- ')
+      //   //call empty
+      //   pupeteer(url);
+      //   //stats
+      //   stats_data.files_could_not_download_links.push(url);
+      //   stats_data.total_files_could_not_download = stats_data.total_files_could_not_download  + 1;
+
+      // },600000 );
+
+    });
+
+    if(!page_goto_results_b){
+
       //set timer then call controller
-       setTimeout(()=>{
+      setTimeout(()=>{
         console.log('timer done. resuming --- ')
         //call empty
         pupeteer(url);
@@ -276,7 +291,8 @@ async function pupeteer(url, res){
 
       },600000 );
 
-    });
+      return;
+    }
 
     //remove auto start
     // auto_retry_active = false;
@@ -413,11 +429,31 @@ async function pupeteer(url, res){
 
         // await page.goto(url, { waitUntil: 'networkidle2' });
         // await page.goto(url, { waitUntil: 'networkidle0' });
-        await page.goto(url, { waitUntil: 'networkidle0' }).catch(e=>{
+        var page_goto_results_a = await page.goto(url, { waitUntil: 'networkidle0' }).catch(e=>{
+
           console.log(' controller() : goto error '+ e+' , waiting ten (10) minutes to retry');
+
+          // //set timer then call controller
+          // setTimeout(()=>{
+          //   console.log('timer done. resuming --- ')
+          //   //call empty
+          //   controller();
+          //   //stats
+          //   stats_data.files_could_not_download_links.push(url);
+          //   stats_data.total_files_could_not_download = stats_data.total_files_could_not_download  + 1;
+
+          // },600000 );
+
+        })
+        
+        
+        // console.log({page_goto_results_a});
+          
+        if(!page_goto_results_a){
 
           //set timer then call controller
           setTimeout(()=>{
+            
             console.log('timer done. resuming --- ')
             //call empty
             controller();
@@ -427,9 +463,8 @@ async function pupeteer(url, res){
 
           },600000 );
 
-        })
-        
-        
+          return ;
+        }
         // await page.$("#mainrow");
         // await page.$("#content");
         // await page.$("#view");
@@ -1193,7 +1228,32 @@ async function pupeteer(url, res){
                 fs.renameSync(path.resolve(downloadFolder, event.guid), path.resolve(downloadFolder, decodeURIComponent(file_url.href.split('/')[file_url.href.split('/').length - 1] )));
               }
               if(event.state === 'canceled'){
+
+                // clear timer
+                // clearInterval(download_tracker_timer);
+
+                //reset tracker
+                download_complete_tracker = 0;
+
+                //give error
+                // console.log("Checking [download complete] suspended for file after 240 tries after 5 seconds interval : " + path.resolve(__dirname,'./downloads/books/'+ file_folder +  decodeURIComponent(file_url.href.split('/')[file_url.href.split('/').length - 1] )));
+
+                //remove link from array
+                complete_link.splice(0,1);//remove itend on first index
+
+                        
+                await browser.close();//close browser//previus browser instances
+
+                  
+                //call controller
+                download_controller();
+
+                //capture stats
+                stats_data.total_files_could_not_download = stats_data.total_files_could_not_download + 1;
+
+                stats_data.files_could_not_download_links.push(file_url.href);   
                 
+                return;
               }
           });
 
@@ -1201,11 +1261,31 @@ async function pupeteer(url, res){
 
           // Navigate to the URL of the file to download.
           // await page.goto(file_directory, { waitUntil: 'networkidle0' });
-          await page.goto(file_directory, { waitUntil: 'networkidle0' }).catch(e=>{
+          var page_goto_results = await page.goto(file_directory, { waitUntil: 'networkidle0' }).catch(e=>{
 
             console.log('file_downloader (): goto err, '+ e+' , waiting ten (10) minutes to retry');
 
+            
             //set timer then call controller
+            // setTimeout(()=>{
+            //   console.log('timer done. resuming --- ')
+            //   //call empty
+            //   file_downloader (file_url);
+            //   //stats
+            //   stats_data.files_could_not_download_links.push(url);
+            //   stats_data.total_files_could_not_download = stats_data.total_files_could_not_download  + 1;
+
+            // },600000 );
+
+            // return ;
+
+          })
+
+          // console.log({page_goto_results});
+          
+          if(!page_goto_results){
+          // set timer then call controller
+
             setTimeout(()=>{
               console.log('timer done. resuming --- ')
               //call empty
@@ -1216,8 +1296,8 @@ async function pupeteer(url, res){
 
             },600000 );
 
-          })
-
+            return ;
+          }
 
           // await page._client().send("Page.setDownloadBehavior",{
           //   behavior : "allow",
