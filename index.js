@@ -929,13 +929,13 @@ async function pupeteer(url, res){
           
     
           //if there are contents in folder
-          else if(file_directory.length > 0){ //issue with windows chrome, some downloaded pdf file dont contain full book name as seen in html link it seem link characters are limited to 60 or something, so i had to create ways to complement download complete methods
+          // else if(file_directory.length > 0){ //issue with windows chrome, some downloaded pdf file dont contain full book name as seen in html link it seem link characters are limited to 60 or something, so i had to create ways to complement download complete methods
 
             // console.log(file_directory)
 
 
 
-            for(file_name of file_directory){//loopd retrived books name
+            // for(file_name of file_directory){//loopd retrived books name
 
               // console.log(
               //   file_name.replaceAll(/[^a-zA-Z0-9]/gi,'').toLowerCase() , decodeURIComponent(file_url.href.split('/')[file_url.href.split('/').length - 1] ).replaceAll(/[^a-zA-Z0-9]/gi,'').toLowerCase(),
@@ -944,69 +944,69 @@ async function pupeteer(url, res){
               //   )
 
 
-              if(//remove special characters from link url file name and compare to file name of saved books in the folder
-                file_name.replaceAll(/[^a-zA-Z0-9]/gi,'').toLowerCase().trim() == decodeURIComponent(file.href.split('/')[file.href.split('/').length - 1] ).replaceAll(/[^a-zA-Z0-9]/gi,'').toLowerCase().trim()
-              ){
+              // if(//remove special characters from link url file name and compare to file name of saved books in the folder
+              //   file_name.replaceAll(/[^a-zA-Z0-9]/gi,'').toLowerCase().trim() == decodeURIComponent(file.href.split('/')[file.href.split('/').length - 1] ).replaceAll(/[^a-zA-Z0-9]/gi,'').toLowerCase().trim()
+              // ){
 
-               console.log('match found, method 1');
-               console.log('--splice 1-- ', complete_link.length);
+              //  console.log('match found, method 1');
+              //  console.log('--splice 1-- ', complete_link.length);
 
 
-               // complete_link.splice(index,1);//delete link\
-               // console.log( 'splice ', complete_link.splice(index,1))
-               complete_link.splice(
-                 complete_link.indexOf(file),
-                 1
-               );//delete link\
+              //  // complete_link.splice(index,1);//delete link\
+              //  // console.log( 'splice ', complete_link.splice(index,1))
+              //  complete_link.splice(
+              //    complete_link.indexOf(file),
+              //    1
+              //  );//delete link\
    
    
-               console.error('file already available locally : '+path.resolve(__dirname,'./downloads/books/'+ file_to_folder +   decodeURIComponent(file.href.split('/')[file.href.split('/').length - 1] ) ))
-               console.log('--splice 2-- ', complete_link.length);
+              //  console.error('file already available locally : '+path.resolve(__dirname,'./downloads/books/'+ file_to_folder +   decodeURIComponent(file.href.split('/')[file.href.split('/').length - 1] ) ))
+              //  console.log('--splice 2-- ', complete_link.length);
    
    
-               //capture stats
-               stats_data.total_files_found_available_offline_matching_those_found_online = stats_data.total_files_found_available_offline_matching_those_found_online + 1;
+              //  //capture stats
+              //  stats_data.total_files_found_available_offline_matching_those_found_online = stats_data.total_files_found_available_offline_matching_those_found_online + 1;
 
 
-               return 
+              //  return 
 
-              }
+              // }
 
               // console.log(file_name.replaceAll(/[^a-zA-Z0-9]/gi,'').slice(0,60) == decodeURIComponent(file_url.href.split('/')[file_url.href.split('/').length - 1] ).replaceAll(/[^a-zA-Z0-9]/gi,'').slice(0,57), file_name.replaceAll(/[^a-zA-Z0-9]/gi,'').slice(0,57) , decodeURIComponent(file_url.href.split('/')[file_url.href.split('/').length - 1] ).replaceAll(/[^a-zA-Z0-9]/gi,'').slice(0,60))
 
-              if( //limit files names to 60 chars and try to find match
-                file_name.replaceAll(/[^a-zA-Z0-9]/gi,'').slice(0,60) == decodeURIComponent(file.href.split('/')[file.href.split('/').length - 1] ).replaceAll(/[^a-zA-Z0-9]/gi,'').slice(0,60)
-              ){
+              // if( //limit files names to 60 chars and try to find match
+              //   file_name.replaceAll(/[^a-zA-Z0-9]/gi,'').slice(0,60) == decodeURIComponent(file.href.split('/')[file.href.split('/').length - 1] ).replaceAll(/[^a-zA-Z0-9]/gi,'').slice(0,60)
+              // ){
 
-               console.log('match found, method  2');
-               console.log('--splice 1-- ', complete_link.length);
+              //  console.log('match found, method  2');
+              //  console.log('--splice 1-- ', complete_link.length);
 
 
-               // complete_link.splice(index,1);//delete link\
-               // console.log( 'splice ', complete_link.splice(index,1))
-               complete_link.splice(
-                 complete_link.indexOf(file),
-                 1
-               );//delete link\
+              //  // complete_link.splice(index,1);//delete link\
+              //  // console.log( 'splice ', complete_link.splice(index,1))
+              //  complete_link.splice(
+              //    complete_link.indexOf(file),
+              //    1
+              //  );//delete link\
    
    
-               console.error('file already available locally : '+path.resolve(__dirname,'./downloads/books/'+ file_to_folder +   decodeURIComponent(file.href.split('/')[file.href.split('/').length - 1] ) ))
-               console.log('--splice 2-- ', complete_link.length);
+              //  console.error('file already available locally : '+path.resolve(__dirname,'./downloads/books/'+ file_to_folder +   decodeURIComponent(file.href.split('/')[file.href.split('/').length - 1] ) ))
+              //  console.log('--splice 2-- ', complete_link.length);
    
    
-               //capture stats
-               stats_data.total_files_found_available_offline_matching_those_found_online = stats_data.total_files_found_available_offline_matching_those_found_online + 1;
+              //  //capture stats
+              //  stats_data.total_files_found_available_offline_matching_those_found_online = stats_data.total_files_found_available_offline_matching_those_found_online + 1;
 
 
-               return 
+              //  return 
 
-              }
+              // }
 
 
               //option 3  //find match in file link name from saved file name, with special characters removed, and file extensions --THIS METHOD IS LESS ACURATE THE SHORTER FILE NAME BEING MATCH IS THE MORE LESS ACCURATE
-              var a =   decodeURIComponent(file.href.split('/')[file.href.split('/').length - 1] ).split('.')[0].replaceAll(/[^a-zA-Z0-9]/gi,'');
+              // var a =   decodeURIComponent(file.href.split('/')[file.href.split('/').length - 1] ).split('.')[0].replaceAll(/[^a-zA-Z0-9]/gi,'');
 
-              var b = file_name.split('.')[0].replaceAll(/[^a-zA-Z0-9]/gi,'');
+              // var b = file_name.split('.')[0].replaceAll(/[^a-zA-Z0-9]/gi,'');
 
               // console.log('----');
 
@@ -1016,40 +1016,40 @@ async function pupeteer(url, res){
               // )
 
               // console.log('-------')
-              if( //
-              a.indexOf(b) > -1 || b.indexOf(a) > -1
-              ){
+              // if( //
+              // a.indexOf(b) > -1 || b.indexOf(a) > -1
+              // ){
 
-                console.log('match found, method  3');
-                console.log('--splice 1-- ', complete_link.length);
+              //   console.log('match found, method  3');
+              //   console.log('--splice 1-- ', complete_link.length);
 
 
-                // complete_link.splice(index,1);//delete link\
-                // console.log( 'splice ', complete_link.splice(index,1))
-                complete_link.splice(
-                  complete_link.indexOf(file),
-                  1
-                );//delete link\
+              //   // complete_link.splice(index,1);//delete link\
+              //   // console.log( 'splice ', complete_link.splice(index,1))
+              //   complete_link.splice(
+              //     complete_link.indexOf(file),
+              //     1
+              //   );//delete link\
     
     
-                console.error('file already available locally : '+path.resolve(__dirname,'./downloads/books/'+ file_to_folder +   decodeURIComponent(file.href.split('/')[file.href.split('/').length - 1] ) ))
-                console.log('--splice 2-- ', complete_link.length);
+              //   console.error('file already available locally : '+path.resolve(__dirname,'./downloads/books/'+ file_to_folder +   decodeURIComponent(file.href.split('/')[file.href.split('/').length - 1] ) ))
+              //   console.log('--splice 2-- ', complete_link.length);
     
     
-                //capture stats
-                stats_data.total_files_found_available_offline_matching_those_found_online = stats_data.total_files_found_available_offline_matching_those_found_online + 1;
+              //   //capture stats
+              //   stats_data.total_files_found_available_offline_matching_those_found_online = stats_data.total_files_found_available_offline_matching_those_found_online + 1;
 
               
 
-              }
+              // }
 
 
 
 
-            }
+            // }
               
    
-          }
+          // }
 
 
 
@@ -1120,21 +1120,22 @@ async function pupeteer(url, res){
             
             UserPreferencesPlugin({  //https://android.googlesource.com/platform/external/chromium/+/ics-aah-release/chrome/common/pref_names.cc
               userPrefs: {
-                download: {
-                  prompt_for_download: false,
-                  open_pdf_in_system_reader: true,
-                  default_directory: path.resolve(__dirname,'./downloads/books/'+ file_folder),
-                },
-                savefile : {
-                  default_directory : path.resolve(__dirname,'./downloads/books/'+ file_folder),
-                  type : (file_url.href.split('.')[file_url.href.split('.').length -1 ]), //return extension of expected file, from file url application/
-                },
+                // download: {
+                //   prompt_for_download: false,
+                //   open_pdf_in_system_reader: true,
+                //   // default_directory: path.resolve(__dirname,'./downloads/books/'+ file_folder),
+                // },
+                // savefile : {
+                //   default_directory : path.resolve(__dirname,'./downloads/books/'+ file_folder),
+                //   type : (file_url.href.split('.')[file_url.href.split('.').length -1 ]), //return extension of expected file, from file url application/
+                // },
                 plugins: {
                   always_open_pdf_externally: true,
                 },
               },
             })
           );
+
 
 
           // Create a new Puppeteer browser instance.
@@ -1144,6 +1145,56 @@ async function pupeteer(url, res){
 
           // Create a new page in the browser.
           const page = await browser.newPage();
+
+          // await page._client().send("Page.setDownloadBehavior", {
+          //   behavior: "allow",
+          //   downloadPath: path.resolve(__dirname,'./downloads/books/'+ file_folder),
+          // })
+
+
+          // const session = await browser.target().createCDPSession();
+        //   await session.send('Browser.setDownloadBehavior', {
+        //       behavior: 'allowAndName',
+        //       downloadPath:  path.resolve(__dirname,'./downloads/books/'+ file_folder),
+        //       eventsEnabled: true
+        //   });
+
+        //   session.on('Browser.downloadProgress', (event)=>{
+        //     if(event.state == 'completed' || event.state == 'canceled'){
+        //         console.log(' download state = ', event.state, event)
+        //     }
+        // });
+
+          let client = await browser.target().createCDPSession();
+          let downloadFolder = path.resolve(__dirname,'./downloads/books/'+ file_folder);
+
+          await client.send('Browser.setDownloadBehavior', {
+            behavior: 'allowAndName', //allow downloading file and save the file using guid as the filename
+            downloadPath: downloadFolder, // specify the download folder
+            eventsEnabled: true //set true to emit download events (e.g. Browser.downloadWillBegin and Browser.downloadProgress)
+          });
+
+          client.on('Browser.downloadWillBegin', async (event) => {
+            console.log(' download state = ', event.state)
+              //some logic here to determine the filename
+              //the event provides event.suggestedFilename and event.url
+              // guids[event.guid] = decodeURIComponent(file_url.href.split('/')[file_url.href.split('/').length - 1] );
+          });
+
+          client.on('Browser.downloadProgress', async (event) => {
+            console.log(' download state = ', event.state, event)
+            console.log(path.resolve(__dirname,'./downloads/books/'+ file_folder +   decodeURIComponent(file_url.href.split('/')[file_url.href.split('/').length - 1] )))
+              // when the file has been downloaded, locate the file by guid and rename it
+              if(event.state === 'completed') {
+                //rename downloaded file from guid name
+                fs.renameSync(path.resolve(downloadFolder, event.guid), path.resolve(downloadFolder, decodeURIComponent(file_url.href.split('/')[file_url.href.split('/').length - 1] )));
+              }
+              if(event.state === 'canceled'){
+                
+              }
+          });
+
+
 
           // Navigate to the URL of the file to download.
           // await page.goto(file_directory, { waitUntil: 'networkidle0' });
@@ -1200,6 +1251,12 @@ async function pupeteer(url, res){
           //   return document.querySelector('a[href="' + url + filename_url + '"]'); 
           
           // },url, filename_url);
+          
+          
+          // await page._client().send("Page.setDownloadBehavior", {
+          //   behavior: "allow",
+          //   downloadPath: path.resolve(__dirname,'./downloads/books/'+ file_folder),
+          // })
 
           //find href with that link 
           await page.evaluate((file_url) => {
@@ -1293,16 +1350,16 @@ async function pupeteer(url, res){
                     try{
 
 
-                      var file_directory = fs.readdirSync(path.resolve(__dirname,'./downloads/books/'+ file_folder));
+                      // var file_directory = fs.readdirSync(path.resolve(__dirname,'./downloads/books/'+ file_folder));
     
                       //if there are contents in folder
-                      if(file_directory.length > 0){ //issue with windows chrome, some downloaded pdf file dont contain full book name as seen in html link it seem link characters are limited to 60 or something, so i had to create ways to complement download complete methods
+                      // if(file_directory.length > 0){ //issue with windows chrome, some downloaded pdf file dont contain full book name as seen in html link it seem link characters are limited to 60 or something, so i had to create ways to complement download complete methods
 
                         // console.log(file_directory)
 
 
 
-                        for(file_name of file_directory){//loopd retrived books name
+                        // for(file_name of file_directory){//loopd retrived books name
 
                           // console.log(
                           //   file_name.replaceAll(/[^a-zA-Z0-9]/gi,'').toLowerCase() , decodeURIComponent(file_url.href.split('/')[file_url.href.split('/').length - 1] ).replaceAll(/[^a-zA-Z0-9]/gi,'').toLowerCase(),
@@ -1311,111 +1368,111 @@ async function pupeteer(url, res){
                           //   )
 
 
-                          if(//remove special characters from link url file name and compare to file name of saved books in the folder
-                            file_name.replaceAll(/[^a-zA-Z0-9]/gi,'').toLowerCase().trim() == decodeURIComponent(file_url.href.split('/')[file_url.href.split('/').length - 1] ).replaceAll(/[^a-zA-Z0-9]/gi,'').toLowerCase().trim()
-                          ){
+                          // if(//remove special characters from link url file name and compare to file name of saved books in the folder
+                          //   file_name.replaceAll(/[^a-zA-Z0-9]/gi,'').toLowerCase().trim() == decodeURIComponent(file_url.href.split('/')[file_url.href.split('/').length - 1] ).replaceAll(/[^a-zA-Z0-9]/gi,'').toLowerCase().trim()
+                          // ){
 
-                           console.log('match found, method 1');
+                          //  console.log('match found, method 1', path.resolve(__dirname,'./downloads/books/'+ file_folder +  decodeURIComponent(file_url.href.split('/')[file_url.href.split('/').length - 1] )));
 
-                            //remove link from download list
-                            complete_link.splice(0,1);//remove itend on first index
+                          //   //remove link from download list
+                          //   complete_link.splice(0,1);//remove itend on first index
 
-                            //reset tracker
-                            download_complete_tracker = 0;
+                          //   //reset tracker
+                          //   download_complete_tracker = 0;
 
-                            // clear timer
-                            clearInterval(download_tracker_timer);
+                          //   // clear timer
+                          //   clearInterval(download_tracker_timer);
 
                                   
-                            await browser.close();//close browser//previus browser instances
+                          //   await browser.close();//close browser//previus browser instances
 
 
                                 
-                            //call controller
-                            download_controller();
+                          //   //call controller
+                          //   download_controller();
 
 
-                           return 
+                          //  return 
 
-                          }
+                          // }
 
                           // console.log(file_name.replaceAll(/[^a-zA-Z0-9]/gi,'').slice(0,60) == decodeURIComponent(file_url.href.split('/')[file_url.href.split('/').length - 1] ).replaceAll(/[^a-zA-Z0-9]/gi,'').slice(0,57), file_name.replaceAll(/[^a-zA-Z0-9]/gi,'').slice(0,57) , decodeURIComponent(file_url.href.split('/')[file_url.href.split('/').length - 1] ).replaceAll(/[^a-zA-Z0-9]/gi,'').slice(0,60))
 
-                          if( //limit files names to 60 chars and try to find match
-                            file_name.replaceAll(/[^a-zA-Z0-9]/gi,'').slice(0,60) == decodeURIComponent(file_url.href.split('/')[file_url.href.split('/').length - 1] ).replaceAll(/[^a-zA-Z0-9]/gi,'').slice(0,60)
-                          ){
+                          // if( //limit files names to 60 chars and try to find match
+                          //   file_name.replaceAll(/[^a-zA-Z0-9]/gi,'').slice(0,60) == decodeURIComponent(file_url.href.split('/')[file_url.href.split('/').length - 1] ).replaceAll(/[^a-zA-Z0-9]/gi,'').slice(0,60)
+                          // ){
 
-                           console.log('match found, method  2');
+                          //  console.log('match found, method  2', path.resolve(__dirname,'./downloads/books/'+ file_folder +  decodeURIComponent(file_url.href.split('/')[file_url.href.split('/').length - 1] )));
 
 
-                            //remove link from download list
-                            complete_link.splice(0,1);//remove itend on first index
+                          //   //remove link from download list
+                          //   complete_link.splice(0,1);//remove itend on first index
 
-                            //reset tracker
-                            download_complete_tracker = 0;
+                          //   //reset tracker
+                          //   download_complete_tracker = 0;
 
-                            // clear timer
-                            clearInterval(download_tracker_timer);
+                          //   // clear timer
+                          //   clearInterval(download_tracker_timer);
 
                                   
-                            await browser.close();//close browser//previus browser instances
+                          //   await browser.close();//close browser//previus browser instances
 
 
                                 
-                            //call controller
-                            download_controller();
+                          //   //call controller
+                          //   download_controller();
 
 
 
-                           return 
+                          //  return 
 
-                          }
+                          // }
 
 
                           //option 3  //find match in file link name from saved file name, with special characters removed, and file extensions --THIS METHOD IS LESS ACURATE THE SHORTER FILE NAME BEING MATCH IS THE MORE LESS ACCURATE
-                          var a =   decodeURIComponent(file_url.href.split('/')[file_url.href.split('/').length - 1] ).split('.')[0].replaceAll(/[^a-zA-Z0-9]/gi,'');
+                        //   var a =   decodeURIComponent(file_url.href.split('/')[file_url.href.split('/').length - 1] ).replace(file_url.href.split('.')[file_url.href.split('.').length - 1], '') //.replaceAll(/[^a-zA-Z0-9]/gi,'');
 
-                          var b = file_name.split('.')[0].replaceAll(/[^a-zA-Z0-9]/gi,'');
+                        //   var b = file_name.replace(file_name.split('.')[file_name.split('.').length - 1], '') //.replaceAll(/[^a-zA-Z0-9]/gi,'');
 
-                          // console.log('----');
+                        //   // console.log('----');
 
-                          // console.log(  
-                          // a,b, a.indexOf(b),b.indexOf(a)
+                        //   console.log(  
+                        //   a,b, a.indexOf(b),b.indexOf(a)
 
-                          // )
+                        //   )
 
-                          // console.log('-------')
-                          if( //
-                          a.indexOf(b) > -1 || b.indexOf(a) > -1
-                          ){
+                        //   // console.log('-------')
+                        //   if( //
+                        //   a.indexOf(b) > -1 || b.indexOf(a) > -1
+                        //   ){
 
-                            console.log('match found, method  3');
+                        //     console.log('match found, method  3', path.resolve(__dirname,'./downloads/books/'+ file_folder +  decodeURIComponent(file_url.href.split('/')[file_url.href.split('/').length - 1] )));
 
-                            //remove link from download list
-                            complete_link.splice(0,1);//remove itend on first index
+                        //     //remove link from download list
+                        //     complete_link.splice(0,1);//remove itend on first index
 
-                            //reset tracker
-                            download_complete_tracker = 0;
+                        //     //reset tracker
+                        //     download_complete_tracker = 0;
 
-                            // clear timer
-                            clearInterval(download_tracker_timer);
+                        //     // clear timer
+                        //     clearInterval(download_tracker_timer);
 
                                   
-                            await browser.close();//close browser//previus browser instances
+                        //     await browser.close();//close browser//previus browser instances
 
 
                                 
-                            //call controller
-                            download_controller();
+                        //     //call controller
+                        //     download_controller();
 
-                            return 
+                        //     return 
 
-                          }
-
-
+                        //   }
 
 
-                        }
+
+
+                        // }
                           
                         // //remove link from download list
                         // complete_link.splice(0,1);//remove itend on first index
@@ -1437,7 +1494,7 @@ async function pupeteer(url, res){
 
 
                         // return;
-                      }
+                      // }
 
 
                     }
