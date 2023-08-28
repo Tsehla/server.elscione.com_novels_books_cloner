@@ -16,3 +16,6 @@ simple nodejs [ server.elscione.com ] books cloner or automated downloading
 to do maybe<br>
 -> add simple operation stats or report<br>
 -> add html frnt control maybe probably wont right now<br>
+
+<br>-- tip, if you have issue reclone this repository or maybe <br>
+mail : petrusnk@ gmail .com //responding not guranteed or promised
