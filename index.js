@@ -1213,14 +1213,11 @@ async function pupeteer(url, res){
           });
 
           client.on('Browser.downloadWillBegin', async (event) => {
-            console.log(' download state = ', event.state)
+            console.log(' download state = ', event.state, ' : means download start');
               //some logic here to determine the filename
               //the event provides event.suggestedFilename and event.url
               // guids[event.guid] = decodeURIComponent(file_url.href.split('/')[file_url.href.split('/').length - 1] );
           });
-
-
-
 
           client.on('Browser.downloadProgress', async (event) => {
             console.log(' download state = ', event.state, event)
