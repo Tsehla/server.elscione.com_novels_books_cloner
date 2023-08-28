@@ -1153,7 +1153,7 @@ async function pupeteer(url, res){
           // return console.log(file_folder)
 
           // console.log('-==', file_url.href.split('.')[file_url.href.split('.').length -1 ]);
-          console.log('================================= FILES STILL TO DOWNLOAD : [ '+complete_link + ' ] ================================= ');
+          console.log('================================= FILES STILL TO DOWNLOAD : [ '+complete_link.length + ' ] ================================= ');
 
           puppeteer.use(
             
