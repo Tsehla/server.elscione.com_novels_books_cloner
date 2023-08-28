@@ -1219,6 +1219,9 @@ async function pupeteer(url, res){
               // guids[event.guid] = decodeURIComponent(file_url.href.split('/')[file_url.href.split('/').length - 1] );
           });
 
+
+
+
           client.on('Browser.downloadProgress', async (event) => {
             console.log(' download state = ', event.state, event)
             console.log(path.resolve(__dirname,'./downloads/books/'+ file_folder +   decodeURIComponent(file_url.href.split('/')[file_url.href.split('/').length - 1] )))
@@ -1228,37 +1231,45 @@ async function pupeteer(url, res){
                 fs.renameSync(path.resolve(downloadFolder, event.guid), path.resolve(downloadFolder, decodeURIComponent(file_url.href.split('/')[file_url.href.split('/').length - 1] )));
               }
               if(event.state === 'canceled'){
-
-                // clear timer
-                // clearInterval(download_tracker_timer);
-
-                //reset tracker
-                download_complete_tracker = 0;
-
-                //give error
-                // console.log("Checking [download complete] suspended for file after 240 tries after 5 seconds interval : " + path.resolve(__dirname,'./downloads/books/'+ file_folder +  decodeURIComponent(file_url.href.split('/')[file_url.href.split('/').length - 1] )));
-
-                //remove link from array
-                complete_link.splice(0,1);//remove itend on first index
-
-                        
-                await browser.close();//close browser//previus browser instances
-
-                  
-                //call controller
-                download_controller();
-
-                //capture stats
-                stats_data.total_files_could_not_download = stats_data.total_files_could_not_download + 1;
-
-                stats_data.files_could_not_download_links.push(file_url.href);   
-                
-                return;
+                download_cancelled();//call
+          
               }
           });
 
 
+          async function download_cancelled(){//if download cancelled
 
+            console.log('download cancelled : continuing to next file')
+          
+            // clear timer
+            clearInterval(download_tracker_timer);
+
+            //reset tracker
+            download_complete_tracker = 0;
+
+            //give error
+            // console.log("Checking [download complete] suspended for file after 240 tries after 5 seconds interval : " + path.resolve(__dirname,'./downloads/books/'+ file_folder +  decodeURIComponent(file_url.href.split('/')[file_url.href.split('/').length - 1] )));
+
+            //remove link from array
+            complete_link.splice(0,1);//remove itend on first index
+
+                    
+            await browser.close();//close browser//previus browser instances
+
+              
+            //call controller
+            download_controller();
+
+            //capture stats
+            stats_data.total_files_could_not_download = stats_data.total_files_could_not_download + 1;
+
+            stats_data.files_could_not_download_links.push(file_url.href);   
+            
+            return;
+
+          }
+
+          
           // Navigate to the URL of the file to download.
           // await page.goto(file_directory, { waitUntil: 'networkidle0' });
           var page_goto_results = await page.goto(file_directory, { waitUntil: 'networkidle0' }).catch(e=>{
