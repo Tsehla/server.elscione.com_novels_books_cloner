@@ -205,7 +205,8 @@ async function pupeteer(url, res){
         var file_directory = fs.readdirSync(path.resolve(__dirname,'./downloads/links/'));
     
         //if there are contents in folder
-        if(file_directory.length > 1){
+        // if(file_directory.length > 1){
+        if(file_directory.length > 0){
           // console.log(files[files.length - 1]);  //last contents is latest one //maybe
 
           full_process_start = false; //set as false
@@ -852,7 +853,9 @@ async function pupeteer(url, res){
       
       await createDirectory('./downloads/books/'+complete_link[0].href.split('/')[2] );
 
-      await createDirectory('./downloads/links/'+complete_link[0].href.split('/')[2] );
+      // await createDirectory('./downloads/links/'+complete_link[0].href.split('/')[2] );
+      
+      await createDirectory('./downloads/links' );
 
       await createDirectory('./downloads/results/'+complete_link[0].href.split('/')[2] );
 

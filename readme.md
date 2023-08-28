@@ -13,3 +13,6 @@
 to do maybe
 -> add simple operation stats or report
 -> add html frnt control maybe probably wont right now
+
+-- tip, if you have issue reclone this repository or maybe 
+mail : petrusnk@ gmail .com //responding not guranteed or promised
