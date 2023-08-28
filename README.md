@@ -18,8 +18,8 @@ simple nodejs [ server.elscione.com ] books cloner or automated downloading
 -> Files with long names wont download (windows or windows puppeteer problem, maybe it may work beteer on linux.  -\_('-')_/-  );<br>
 -> Folders/directories that contains period/fullstop (.)  in their names wont download (This is site limitation to disable direct file downloading, this limitation can be solved easily programmically, but there are few of directories names with such issue) latest report will contain files that failed to download on latest run, so you can manual download.<br>
 
----------
--- to run script<br><br>
+-----<br>
+-- To run script<br><br>
 1) npm install --global yarn<br>
 2) yarn install : npm not working for some of required dependencies<br>
 3) node index<br>
