@@ -21,7 +21,7 @@ simple nodejs [ server.elscione.com ] books cloner or automated downloading
 -----<br>
 -- To run script<br><br>
 1) npm install --global yarn<br>
-2) yarn install : npm not working for some of required dependencies<br>
+2) yarn install : (npm not working for some of required dependencies)<br>
 3) node index<br>
 <br>
 -----<br>
