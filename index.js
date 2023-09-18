@@ -1180,7 +1180,14 @@ async function pupeteer(url, res){
           // Create a new Puppeteer browser instance.
           // const browser = await puppeteer.launch({headless:false,protocolTimeout : 0});
           // const browser = await puppeteer.launch({headless:true,protocolTimeout : 0}); //--- SEEM NOT TO SUPPORT DOWNLOADS
-          const browser = await puppeteer.launch({headless:'new',protocolTimeout : 0});
+          const browser = await puppeteer.launch({
+            headless:'new',
+            protocolTimeout : 0, 
+            // userDataDir: process.cwd(),
+            // profileDir: process.cwd(),
+            userDataDir: './browser_profile',
+            profileDir: './browser_profile',
+        });
 
           // Create a new page in the browser.
           const page = await browser.newPage();
@@ -1722,6 +1729,19 @@ async function pupeteer(url, res){
 
 };
 
+
+//delete chrome 
+async function checkAndDeleteFolder(folderPath) {
+  // Check if the directory already exists.
+  const exists = await fs.existsSync(folderPath);
+  
+  // If the directory does exist, deleit it.
+  if (exists) {
+    await fs.rmdirSync(folderPath,  {recursive: true});
+  }
+}
+// Check if the browser profile directory exists and delete it.
+checkAndDeleteFolder('./browser_profile');
 
 
 pupeteer('https://server.elscione.com/LNWNCentral%20Dump/');//auto start
